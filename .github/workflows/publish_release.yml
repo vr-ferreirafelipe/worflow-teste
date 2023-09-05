@@ -5,7 +5,7 @@ on:
 
 jobs:
   call-check-last-release:
-    name: Call Last Release
+    name: Call Check Last Release
     uses: ./.github/workflows/check-last-release.yml
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}

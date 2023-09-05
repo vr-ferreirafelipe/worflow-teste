@@ -30,6 +30,8 @@ jobs:
       - name: Check already exists releases
         id: check_already_exists_tags
         run: |
+          echo "::set-output name=IS_FIRST_TAG::"false""
+
           # verifica se ja existem TAGS
           if [ "$(git tag | wc -l)" -eq 0 ]; then
             echo "Esta é a primeira release do projeto"
@@ -39,7 +41,7 @@ jobs:
           fi
 
       - name: Get Last Release Tag 
-        if: steps.check_already_exists_tags.outputs.IS_FIRST_TAG != ''
+        if: steps.check_already_exists_tags.outputs.IS_FIRST_TAG == 'false'
         id: get_last_version
         run: |
           # Inicialize uma variável de versão com a última tag
