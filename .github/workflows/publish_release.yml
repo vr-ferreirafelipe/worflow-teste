@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  call-check-last-release:
-    name: Call Check Last Release
-    uses: ./.github/workflows/check-last-release.yml
+  run_pre_release:
+    name: Run Pre Release
+    uses: ./.github/workflows/pre-release.yml
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
@@ -14,7 +14,7 @@ jobs:
     name: Call Check Commit
     uses: ./.github/workflows/check-commits.yml
     needs:
-     - call-check-last-release
+     - run_pre_release
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
