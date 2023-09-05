@@ -28,7 +28,7 @@ jobs:
     needs: 
       - run_pre_release
       - run_prepare_new_release
-    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE && ${{ always() }}
+    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.NEW_VERSION != '' && ${{ always() }}
 
     runs-on: ubuntu-latest
 
@@ -55,7 +55,7 @@ jobs:
       
   publish_release:
     name: Publish Release
-    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE && ${{ always() }}
+    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.NEW_VERSION != '' && ${{ always() }}
     needs: 
       - run_pre_release
       - run_prepare_new_release
