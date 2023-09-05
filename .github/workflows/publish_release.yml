@@ -98,9 +98,8 @@ jobs:
         with:
           tag_name: v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
           release_name: Release v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
-          commit: main
-          draft: false
-          prerelease: false
+          commitish: main
+
 
         # uses: ncipollo/release-action@v1
         # with:
