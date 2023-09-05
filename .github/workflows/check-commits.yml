@@ -40,7 +40,7 @@ jobs:
       - name: Check Changes
         id: check_changes
         run: |
-          IS_FIRST_TAG=${ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }
+          IS_FIRST_TAG=${{ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }}
 
           # Obtenha a quantidade de novos commits
           if [ -z $IS_FIRST_TAG ]; then
