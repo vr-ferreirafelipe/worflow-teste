@@ -8,7 +8,7 @@ on:
     outputs:
       LAST_VERSION:
         description: "Armazena ultima tag gerada ou 0.0.0 se nao existir nenhuma TAG"
-        value: ${{ jobs.pre-release.LAST_VERSION }}
+        value: ${{ jobs.pre-release.outputs.LAST_VERSION }}
       IS_FIRST_VERSION:
         description: "Verifica se existem novos commits"
         value: ${{ jobs.pre-release.outputs.IS_FIRST_VERSION }}

@@ -39,7 +39,7 @@ jobs:
 
       - name: Generate next version 
         id: generate_next_version
-        # if: inputs.LAST_VERSION
+        if: inputs.LAST_VERSION
         run: |
           COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
           lAST_VERSION=${{ inputs.LAST_VERSION }}
