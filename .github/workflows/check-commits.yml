@@ -29,18 +29,29 @@ jobs:
           fetch-depth: 0
           ref: main
 
+      - name: Check already exists TAGS
+        id: check_already_exists_tags
+        run: |
+          # verifica se ja existem TAGS
+          if ["$(git tag | wc -l)" -eq 0]; then
+            echo "::set-output name=IS_FIRST_TAG::"true""
+          fi
+
       - name: Check Changes
         id: check_changes
         run: |
-          # verifica se ja existem TAGS
-          if [-z "$(git show-ref --tags)"]; then
-            IS_FIRST_TAG="true"
-          fi
+          IS_FIRST_TAG=${ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }
 
           # Obtenha a quantidade de novos commits
-          # Se IS_FIRST_TAG retornar vazio considera os commits da branch main
-          # Se não considera os commits da feitos depois da ultima TAG
-          COMMIT_COUNT=$([ -z $IS_FIRST_TAG ] && echo "$(git rev-list main --count)" || echo "$(git rev-list $(git describe --tags --abbrev=0 @^)..@ --count)")
+          if [ -z $IS_FIRST_TAG ]; then
+            # Se IS_FIRST_TAG retornar vazio considera os commits da branch main
+            COMMIT_COUNT=$(git rev-list main --count)
+          else
+            # Se não considera os commits da feitos depois da ultima TAG
+            COMMIT_COUNT=$(git rev-list $(git describe --tags --abbrev=0 @^)..@ --count)
+          fi
+
+          # COMMIT_COUNT=$([ -z $IS_FIRST_TAG ] && echo "$(git rev-list main --count)" || echo "$(git rev-list $(git describe --tags --abbrev=0 @^)..@ --count)")
 
           # verifica se existem commits pendente
           if [ "$COMMIT_COUNT" -gt 0 ]; then
@@ -50,9 +61,19 @@ jobs:
       - name: Get Commit Messages
         id: get_commit
         if: steps.check_changes.outputs.HAS_CHANGES
-        run: |          # Obtenha as mensagens de commit desde o último tag
-          # COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B)
-          COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
+        run: |
+          IS_FIRST_TAG=${ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }
+          
+          # Obtenha a quantidade de novos commits
+          if [ -z $IS_FIRST_TAG ]; then
+            # Se IS_FIRST_TAG retornar vazio considera os commits da branch main
+            COMMIT_MESSAGES=$(git log $(git rev-list main --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
+          else
+            # Se não considera os commits da feitos depois da ultima TAG
+            COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
+          fi
+
+          # COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
 
           # Set output COMMIT_MESSAGES
           echo "::set-output name=COMMIT_MESSAGES::$COMMIT_MESSAGES"
