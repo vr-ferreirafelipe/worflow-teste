@@ -1,0 +1,94 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  call-check-commit:
+    name: Call Check Commit
+    uses: ./.github/workflows/check-commits.yml
+    secrets:
+      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+
+  call-generate-release-tag:
+    name: Call Generate release tag
+    uses: ./.github/workflows/generate-release-tag.yml
+    needs: call-check-commit
+    if: needs.call-check-commit.outputs.has_changes
+    with:
+      COMMIT_MESSAGES: ${{ needs.call-check-commit.outputs.commit_message }}
+    secrets:
+      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+
+  prepare_branch_main:
+    name: Prepare Branch Main
+    if: github.ref == 'refs/heads/main' && needs.call-check-commit.outputs.has_changes && ${{ always() }}
+    needs: 
+      - call-check-commit
+      - call-generate-release-tag
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.VRPACKAGETOKEN }}
+          fetch-depth: 0
+          ref: main
+
+      - name: Git Config
+        if: needs.call-generate-release-tag.outputs.HAS_RELEASE
+        run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
+
+      - name: Upgrade Release
+        id: upgrade_release
+        if: needs.call-generate-release-tag.outputs.HAS_RELEASE
+        run: |
+          NEW_VERSION=${{ needs.call-generate-release-tag.outputs.NEW_VERSION }}
+
+          npm --no-git-tag-version version $NEW_VERSION
+          git add . 
+          git commit -m "ci: Entrega da versão $NEW_VERSION"
+          git push
+      
+  publish_release:
+    name: Publish Release
+    if: github.ref == 'refs/heads/main' && needs.call-check-commit.outputs.has_changes && ${{ always() }}
+    needs: 
+      - call-check-commit
+      - call-generate-release-tag
+      - prepare_branch_main
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.VRPACKAGETOKEN }}
+          fetch-depth: 0
+          ref: main
+
+      - name: Create Release
+        id: create_release
+        if: needs.call-generate-release-tag.outputs.HAS_RELEASE
+        uses: ncipollo/release-action@v1
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+      #   with:
+      #     tag_name: v${{ needs.call-generate-release-tag.outputs.NEW_VERSION }}
+      #     release_name: Release v${{ needs.call-generate-release-tag.outputs.NEW_VERSION }}
+      #     commit: main
+        with:
+          name: ${{ inputs.versao }}
+          tag: v${{ inputs.versao }}
+          commit: main
+          draft: false
+          prerelease: false
+          token: ${{ secrets.VRPACKAGETOKEN }}
+
