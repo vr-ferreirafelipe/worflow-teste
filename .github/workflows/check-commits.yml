@@ -43,7 +43,7 @@ jobs:
           IS_FIRST_TAG=${{ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }}
 
           # Obtenha a quantidade de novos commits
-          if [ -n $IS_FIRST_TAG ]; then
+          if [ $IS_FIRST_TAG == "true" ]; then
             # Se IS_FIRST_TAG for diferente de vazio considerar os commits da branch main
             echo "1° RELEASE: capturando commits da branch main"
             COMMIT_COUNT=$(git rev-list main --count)
@@ -62,10 +62,10 @@ jobs:
         id: get_commit
         if: steps.check_changes.outputs.HAS_CHANGES
         run: |
-          IS_FIRST_TAG=${ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }
+          IS_FIRST_TAG=${{ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }}
           
           # Obtenha a quantidade de novos commits
-          if [ -z $IS_FIRST_TAG ]; then
+          if [ $IS_FIRST_TAG == true ]; then
             # Se IS_FIRST_TAG retornar vazio considera os commits da branch main
             COMMIT_MESSAGES=$(git log $(git rev-list main --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
           else
