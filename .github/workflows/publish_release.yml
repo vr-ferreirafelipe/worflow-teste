@@ -10,30 +10,40 @@ jobs:
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
-  call-check-commit:
-    name: Call Check Commit
-    uses: ./.github/workflows/check-commits.yml
-    needs:
-     - run_pre_release
+  run_prepare_new_release:
+    name: Run Prepare new release
+    uses: ./.github/workflows/prepare-new-release.yaml
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
-
-  call-generate-release-tag:
-    name: Call Generate release tag
-    uses: ./.github/workflows/generate-release-tag.yml
-    needs: call-check-commit
-    if: needs.call-check-commit.outputs.HAS_CHANGES
     with:
-      COMMIT_MESSAGES: ${{ needs.call-check-commit.outputs.COMMIT_MESSAGES }}
-    secrets:
-      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+      LAST_VERSION: ${{ needs.run_pre_release.outputs.LAST_VERSION }}
+      COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }}
+
+  # run_pre_release:
+  #   name: Call Check Commit
+  #   uses: ./.github/workflows/check-commits.yml
+  #   needs:
+  #    - run_pre_release
+  #   secrets:
+  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+
+  # run_prepare_new_release:
+  #   name: Call Generate release tag
+  #   uses: ./.github/workflows/generate-release-tag.yml
+  #   needs: run_pre_release
+  #   if: needs.run_pre_release.outputs.HAS_CHANGES
+  #   with:
+  #     COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }}
+  #   secrets:
+  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+      
 
   prepare_branch_main:
     name: Prepare Branch Main
-    if: github.ref == 'refs/heads/main' && needs.call-check-commit.outputs.HAS_CHANGES && ${{ always() }}
+    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && ${{ always() }}
     needs: 
-      - call-check-commit
-      - call-generate-release-tag
+      - run_pre_release
+      - run_prepare_new_release
 
     runs-on: ubuntu-latest
 
@@ -46,14 +56,14 @@ jobs:
           ref: main
 
       - name: Git Config
-        if: needs.call-generate-release-tag.outputs.HAS_RELEASE
+        if: needs.run_prepare_new_release.outputs.HAS_RELEASE
         run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
 
       - name: Upgrade Release
         id: upgrade_release
-        if: needs.call-generate-release-tag.outputs.HAS_RELEASE
+        if: needs.run_prepare_new_release.outputs.HAS_RELEASE
         run: |
-          NEW_VERSION=${{ needs.call-generate-release-tag.outputs.NEW_VERSION }}
+          NEW_VERSION=${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
 
           npm --no-git-tag-version version $NEW_VERSION
           git add . 
@@ -62,10 +72,10 @@ jobs:
       
   publish_release:
     name: Publish Release
-    if: github.ref == 'refs/heads/main' && needs.call-check-commit.outputs.HAS_CHANGES && ${{ always() }}
+    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && ${{ always() }}
     needs: 
-      - call-check-commit
-      - call-generate-release-tag
+      - run_pre_release
+      - run_prepare_new_release
       - prepare_branch_main
 
     runs-on: ubuntu-latest
@@ -80,14 +90,14 @@ jobs:
 
       - name: Create Release
         id: create_release
-        if: needs.call-generate-release-tag.outputs.HAS_RELEASE
+        if: needs.run_prepare_new_release.outputs.HAS_RELEASE
         uses: ncipollo/release-action@v1
       #   uses: actions/create-release@v1
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
       #   with:
-      #     tag_name: v${{ needs.call-generate-release-tag.outputs.NEW_VERSION }}
-      #     release_name: Release v${{ needs.call-generate-release-tag.outputs.NEW_VERSION }}
+      #     tag_name: v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
+      #     release_name: Release v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
       #     commit: main
         with:
           name: ${{ inputs.versao }}

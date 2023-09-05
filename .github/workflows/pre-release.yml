@@ -9,16 +9,16 @@ on:
       LAST_VERSION:
         description: "Armazena ultima tag gerada ou 0.0.0 se nao existir nenhuma TAG"
         value: ${{ jobs.get_last_tag.outputs.LAST_VERSION }}
-      IS_FIRST_TAG:
+      IS_FIRST_VERSION:
         description: "Verifica se existem novos commits"
-        value: ${{ jobs.check-last_release.outputs.IS_FIRST_TAG }}
+        value: ${{ jobs.check-last_release.outputs.IS_FIRST_VERSION }}
 
-      # COMMIT_MESSAGES:
-      #   description: "Armazena as messagens de novos commits"
-      #   value: ${{ jobs.check-commit.outputs.COMMIT_MESSAGES }}
-      # HAS_CHANGES:
-      #   description: "Verifica se existem novos commits"
-      #   value: ${{ jobs.check-commit.outputs.HAS_CHANGES }}
+      COMMIT_MESSAGES:
+        description: "Armazena as messagens de novos commits"
+        value: ${{ jobs.check-commit.outputs.COMMIT_MESSAGES }}
+      HAS_CHANGES:
+        description: "Verifica se existem novos commits"
+        value: ${{ jobs.check-commit.outputs.HAS_CHANGES }}
 
 jobs:
   check-last_release:
@@ -27,11 +27,10 @@ jobs:
     outputs:
       
       LAST_VERSION: ${{ steps.get_last_version.outputs.LAST_VERSION }}
-      IS_FIRST_TAG: ${{ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }}
+      IS_FIRST_VERSION: ${{ steps.check_already_exists_tags.outputs.IS_FIRST_VERSION }}
       
-      # HAS_CHANGES: ${{ steps.check_changes.outputs.HAS_CHANGES }}
-      # COMMIT_MESSAGES: ${{ steps.get_commit.outputs.COMMIT_MESSAGES }}
-
+      HAS_CHANGES: ${{ steps.check_changes.outputs.HAS_CHANGES }}
+      COMMIT_MESSAGES: ${{ steps.save_commit_messages.outputs.COMMIT_MESSAGES }}
 
     steps:
       - name: Checkout
@@ -46,16 +45,16 @@ jobs:
         run: |
           # verifica se ja existem TAGS
           if [ "$(git tag | wc -l)" -eq 0 ]; then
-            echo "::set-output name=IS_FIRST_TAG::"true""
+            echo "::set-output name=IS_FIRST_VERSION::"true""
           fi
 
       - name: Get Last Release Tag 
         id: get_last_version
         run: |
-          IS_FIRST_TAG=${{ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }}
+          IS_FIRST_VERSION=${{ steps.check_already_exists_tags.outputs.IS_FIRST_VERSION }}
 
-          # verifica se IS_FIRST_TAG é vazio
-          if [ -z "$IS_FIRST_TAG" ]; then
+          # verifica se IS_FIRST_VERSION é vazio
+          if [ -z "$IS_FIRST_VERSION" ]; then
             # Inicialize uma variável de versão com a última tag
             LAST_VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
             echo "::set-output name=last_version::$LAST_VERSION"
@@ -65,3 +64,44 @@ jobs:
           fi
 
           echo "LAST_VERSION = $LAST_VERSION"
+
+      - name: Check for new changes
+        id: check_changes
+        run: |
+          IS_FIRST_VERSION=${{ steps.check_already_exists_tags.outputs.IS_FIRST_VERSION }}
+
+          # Obtenha a quantidade de novos commits
+          if [ -n "$IS_FIRST_VERSION" ]; then
+            # Se IS_FIRST_VERSION for diferente de vazio considerar os commits da branch main
+            echo "1° RELEASE: capturando commits da branch main"
+            COMMIT_COUNT=$(git rev-list main --count)
+          else
+            # Se não considera os commits da feitos depois da ultima TAG
+            echo "RELEASE: capturando commits da ultim tag gerada"
+            COMMIT_COUNT=$(git rev-list $(git describe --tags --abbrev=0 @^)..@ --count)
+          fi
+
+          # verifica se existem commits pendente
+          if [ "$COMMIT_COUNT" -gt 0 ]; then
+            echo "::set-output name=HAS_CHANGES::"true""
+          fi
+
+      - name: Save commit messages
+        id: save_commit_messages
+        if: steps.check_changes.outputs.HAS_CHANGES
+        run: |
+          IS_FIRST_VERSION=${{ steps.check_already_exists_tags.outputs.IS_FIRST_VERSION }}
+          
+          # Obtenha a quantidade de novos commits
+          if [ -n "$IS_FIRST_VERSION" ]; then
+            # Se IS_FIRST_VERSION retornar vazio considera os commits da branch main
+            COMMIT_MESSAGES=$(git log $(git rev-list main --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
+          else
+            # Se não considera os commits da feitos depois da ultima TAG
+            COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
+          fi
+
+          # COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
+
+          # Set output COMMIT_MESSAGES
+          echo "::set-output name=COMMIT_MESSAGES::$COMMIT_MESSAGES"
