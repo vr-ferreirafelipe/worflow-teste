@@ -46,6 +46,7 @@ jobs:
       - name: Upgrade Release
         id: upgrade_release
         run: |
+          HAS_NEW_RELEASE=${{ needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE }}
           NEW_VERSION=${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
 
           npm --no-git-tag-version version $NEW_VERSION
