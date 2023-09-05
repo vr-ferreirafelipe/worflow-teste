@@ -13,6 +13,8 @@ jobs:
   run_prepare_new_release:
     name: Run Prepare new release
     uses: ./.github/workflows/prepare-new-release.yaml
+    needs: run_pre_release
+    if: needs.run_pre_release.outputs.HAS_CHANGES
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
     with:
