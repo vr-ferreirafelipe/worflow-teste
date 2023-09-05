@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       
-      LAST_VERSION: ${{ steps.get_last_version.outputs.LAST_VERSION }}
+      LAST_VERSION: ${{ steps.get_LAST_VERSION.outputs.LAST_VERSION }}
       IS_FIRST_VERSION: ${{ steps.check_already_exists_tags.outputs.IS_FIRST_VERSION }}
       
       HAS_CHANGES: ${{ steps.check_changes.outputs.HAS_CHANGES }}
@@ -49,7 +49,7 @@ jobs:
           fi
 
       - name: Get Last Release Tag 
-        id: get_last_version
+        id: get_LAST_VERSION
         run: |
           IS_FIRST_VERSION=${{ steps.check_already_exists_tags.outputs.IS_FIRST_VERSION }}
 
@@ -57,10 +57,10 @@ jobs:
           if [ -z "$IS_FIRST_VERSION" ]; then
             # Inicialize uma variável de versão com a última tag
             LAST_VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
-            echo "::set-output name=last_version::$LAST_VERSION"
+            echo "::set-output name=LAST_VERSION::$LAST_VERSION"
           else 
             LAST_VERSION="0.0.0"
-            echo "::set-output name=last_version::$LAST_VERSION"
+            echo "::set-output name=LAST_VERSION::$LAST_VERSION"
           fi
 
           echo "LAST_VERSION = $LAST_VERSION"
