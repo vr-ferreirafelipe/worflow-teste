@@ -67,7 +67,6 @@ jobs:
           else
             # Nenhum commit gerará uma nova release
             echo "Nenhum commit nesta push gerará uma nova release."
-            echo "::set-output name=HAS_NEW_RELEASE::false"
           fi 
 
           echo "::set-output name=NEW_VERSION::$NEW_VERSION"
