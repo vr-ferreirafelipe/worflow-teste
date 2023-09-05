@@ -8,20 +8,20 @@ on:
     outputs:
       LAST_VERSION:
         description: "Armazena ultima tag gerada ou 0.0.0 se nao existir nenhuma TAG"
-        value: ${{ jobs.get_last_tag.outputs.LAST_VERSION }}
+        value: ${{ jobs.pre-release.LAST_VERSION }}
       IS_FIRST_VERSION:
         description: "Verifica se existem novos commits"
-        value: ${{ jobs.check-last_release.outputs.IS_FIRST_VERSION }}
+        value: ${{ jobs.pre-release.outputs.IS_FIRST_VERSION }}
 
       COMMIT_MESSAGES:
         description: "Armazena as messagens de novos commits"
-        value: ${{ jobs.check-commit.outputs.COMMIT_MESSAGES }}
+        value: ${{ jobs.pre-release.outputs.COMMIT_MESSAGES }}
       HAS_CHANGES:
         description: "Verifica se existem novos commits"
-        value: ${{ jobs.check-commit.outputs.HAS_CHANGES }}
+        value: ${{ jobs.pre-release.outputs.HAS_CHANGES }}
 
 jobs:
-  check-last_release:
+  pre-release:
     name: Check Last Release
     runs-on: ubuntu-latest
     outputs:
