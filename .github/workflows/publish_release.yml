@@ -21,33 +21,14 @@ jobs:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
     with:
       LAST_VERSION: ${{ needs.run_pre_release.outputs.LAST_VERSION }}
-      COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }}
-
-  # run_pre_release:
-  #   name: Call Check Commit
-  #   uses: ./.github/workflows/check-commits.yml
-  #   needs:
-  #    - run_pre_release
-  #   secrets:
-  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
-
-  # run_prepare_new_release:
-  #   name: Call Generate release tag
-  #   uses: ./.github/workflows/generate-release-tag.yml
-  #   needs: run_pre_release
-  #   if: needs.run_pre_release.outputs.HAS_CHANGES
-  #   with:
-  #     COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }}
-  #   secrets:
-  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
-      
+      COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }}      
 
   prepare_branch_main:
     name: Prepare Branch Main
-    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE && ${{ always() }}
     needs: 
       - run_pre_release
       - run_prepare_new_release
+    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE && ${{ always() }}
 
     runs-on: ubuntu-latest
 

@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       NEW_VERSION: ${{ steps.generate_next_version.outputs.NEW_VERSION }}
-      HAS_NEW_RELEASE: ${{ steps.validate_next_version.outputs.HAS_NEW_RELEASE }}
+      HAS_NEW_RELEASE: ${{ steps.generate_next_version.outputs.HAS_NEW_RELEASE }}
 
     steps:
       - name: Checkout
@@ -55,12 +55,15 @@ jobs:
           if [[ $COMMIT_MESSAGES =~ "/(feat|fix)!(\([^)]*\))?:/g" ]]; then
             # Gera nova tag MAJOR
             NEW_VERSION="$((LAST_MAJOR_VERSION + 1)).0.0"
+           echo "::set-output name=HAS_NEW_RELEASE::true"
           elif [[ $COMMIT_MESSAGES =~ "feat(\([^)]*\))?:" ]]; then
             # Gera nova tag MINOR
             NEW_VERSION="$LAST_MAJOR_VERSION.$((LAST_MINOR_VERSION + 1)).0"
+            echo "::set-output name=HAS_NEW_RELEASE::true"
           elif [[ $COMMIT_MESSAGES =~ "fix(\([^)]*\))?:" ]]; then
             # Gera nova tag patch
             NEW_VERSION="$LAST_MAJOR_VERSION.$LAST_MINOR_VERSION.$((LAST_PATCH_VERSION + 1))"
+            echo "::set-output name=HAS_NEW_RELEASE::true"
           else
             # Nenhum commit gerará uma nova release
             echo "Nenhum commit nesta push gerará uma nova release."
@@ -93,6 +96,4 @@ jobs:
             echo "A nova versão não é superior à última versão. Saindo do fluxo de trabalho."
             exit 1
           fi
-
-          echo "::set-output name=HAS_NEW_RELEASE::true"
         shell: bash
