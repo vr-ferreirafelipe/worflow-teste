@@ -52,7 +52,7 @@ jobs:
           # Ativa a correspondência insensível a maiúsculas e minúsculas
           shopt -s nocasematch
 
-          if [[ $COMMIT_MESSAGES =~ "BREAKING CHANGE" ]]; then
+          if [[ $COMMIT_MESSAGES =~ "feat!" || $COMMIT_MESSAGES =~ "fix!" ]]; then
             # Gera nova tag MAJOR
             NEW_VERSION="$((LAST_MAJOR_VERSION + 1)).0.0"
           elif [[ $COMMIT_MESSAGES =~ "feat" ]]; then
