@@ -17,15 +17,15 @@ jobs:
     name: Call Generate release tag
     uses: ./.github/workflows/generate-release-tag.yml
     needs: call-check-commit
-    if: needs.call-check-commit.outputs.has_changes
+    if: needs.call-check-commit.outputs.HAS_CHANGES
     with:
-      COMMIT_MESSAGES: ${{ needs.call-check-commit.outputs.commit_message }}
+      COMMIT_MESSAGES: ${{ needs.call-check-commit.outputs.COMMIT_MESSAGES }}
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
   prepare_branch_main:
     name: Prepare Branch Main
-    if: github.ref == 'refs/heads/main' && needs.call-check-commit.outputs.has_changes && ${{ always() }}
+    if: github.ref == 'refs/heads/main' && needs.call-check-commit.outputs.HAS_CHANGES && ${{ always() }}
     needs: 
       - call-check-commit
       - call-generate-release-tag
@@ -57,7 +57,7 @@ jobs:
       
   publish_release:
     name: Publish Release
-    if: github.ref == 'refs/heads/main' && needs.call-check-commit.outputs.has_changes && ${{ always() }}
+    if: github.ref == 'refs/heads/main' && needs.call-check-commit.outputs.HAS_CHANGES && ${{ always() }}
     needs: 
       - call-check-commit
       - call-generate-release-tag

@@ -6,20 +6,20 @@ on:
       VR_PACKAGE_TOKEN:
         required: true
     outputs:
-      commit_message:
+      COMMIT_MESSAGES:
         description: "Armazena as messagens de novos commits"
-        value: ${{ jobs.check-commit.outputs.commit_message }}
-      has_changes:
+        value: ${{ jobs.check-commit.outputs.COMMIT_MESSAGES }}
+      HAS_CHANGES:
         description: "Verifica se existem novos commits"
-        value: ${{ jobs.check-commit.outputs.has_changes }}
+        value: ${{ jobs.check-commit.outputs.HAS_CHANGES }}
 
 jobs:
   check-commit:
     name: Check Commit
     runs-on: ubuntu-latest
     outputs:
-      has_changes: ${{ steps.check_changes.outputs.has_changes }}
-      commit_message: ${{ steps.get_commit.outputs.commit_message }}
+      HAS_CHANGES: ${{ steps.check_changes.outputs.HAS_CHANGES }}
+      COMMIT_MESSAGES: ${{ steps.get_commit.outputs.COMMIT_MESSAGES }}
 
     steps:
       - name: Checkout
@@ -34,17 +34,20 @@ jobs:
         run: |
           # Obtenha a quantidade de novos commits
           COMMIT_COUNT=$(git rev-list $(git describe --tags --abbrev=0 @^)..@ --count)
+          echo "COMMIT_COUNT $COMMIT_COUNT"
 
-          # Set output has_changes com true ou false
-          echo "::set-output name=has_changes::$([ "$COMMIT_COUNT" -gt 0 ] && echo "true" || echo "false")"
+          # verifica se existem commits pendente
+          if [ "$COMMIT_COUNT" -gt 0 ]; then
+          echo "::set-output name=HAS_CHANGES::"true""
+          fi
 
       - name: Get Commit Messages
         id: get_commit
-        if: steps.check_changes.outputs.has_changes == 'true'
+        if: steps.check_changes.outputs.HAS_CHANGES
         run: |
           # Obtenha as mensagens de commit desde o último tag
           # COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B)
           COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
 
-          # Set output commit_message
-          echo "::set-output name=commit_message::$COMMIT_MESSAGES"
+          # Set output COMMIT_MESSAGES
+          echo "::set-output name=COMMIT_MESSAGES::$COMMIT_MESSAGES"
