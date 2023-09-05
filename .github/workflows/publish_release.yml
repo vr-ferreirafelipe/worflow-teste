@@ -4,9 +4,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  call-check-last-release:
+    name: Call Last Release
+    uses: ./.github/workflows/check-last-release.yml
+    secrets:
+      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+
   call-check-commit:
     name: Call Check Commit
     uses: ./.github/workflows/check-commits.yml
+    needs:
+     - call-check-last-release
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 

@@ -1,0 +1,47 @@
+on:
+  workflow_call:
+    secrets:
+      VR_PACKAGE_TOKEN:
+        required: true
+    outputs:
+      LAST_VERSION:
+        description: "Armazena ultima tag gerada ou 0.0.0 se nao existir nenhuma TAG"
+        value: ${{ jobs.get_last_tag.outputs.LAST_VERSION }}
+      IS_FIRST_TAG:
+        description: "Verifica se existem novos commits"
+        value: ${{ jobs.check-last_release.outputs.IS_FIRST_TAG }}
+
+jobs:
+  check-last_release:
+    name: Check Last Release
+    runs-on: ubuntu-latest
+    outputs:
+      LAST_VERSION: ${{ steps.check_changes.outputs.LAST_VERSION }}
+      IS_FIRST_TAG: ${{ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.VR_PACKAGE_TOKEN }}
+          fetch-depth: 0
+          ref: main
+
+      - name: Check already exists releases
+        id: check_already_exists_tags
+        run: |
+          # verifica se ja existem TAGS
+          if [ "$(git tag | wc -l)" -eq 0 ]; then
+            echo "Esta é a primeira release do projeto"
+
+            echo "::set-output name=IS_FIRST_TAG::"true""
+            echo "::set-output name=LAST_VERSION::"0.0.0""
+          fi
+
+      - name: Get Last Release Tag 
+        if: steps.check_already_exists_tags.outputs.IS_FIRST_TAG != ''
+        id: get_last_version
+        run: |
+          # Inicialize uma variável de versão com a última tag
+          LAST_VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
+          echo "::set-output name=last_version::$LAST_VERSION"
