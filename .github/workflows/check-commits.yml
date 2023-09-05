@@ -32,20 +32,23 @@ jobs:
       - name: Check Changes
         id: check_changes
         run: |
+          # verifica se ja existem tags
+          IS_FIRST_TAG=$([ -z "$(git show-ref --tags)" ] && echo "true")
+
           # Obtenha a quantidade de novos commits
-          COMMIT_COUNT=$(git rev-list $(git describe --tags --abbrev=0 @^)..@ --count)
-          echo "COMMIT_COUNT $COMMIT_COUNT"
+          # Se IS_FIRST_TAG retornar vazio considera os commits da branch main
+          # Se não considera os commits da feitos depois da ultima TAG
+          COMMIT_COUNT=$([ -z "IS_FIRST_TAG" ] && echo "$(git rev-list main --count)" || echo "$(git rev-list $(git describe --tags --abbrev=0 @^)..@ --count)")
 
           # verifica se existem commits pendente
           if [ "$COMMIT_COUNT" -gt 0 ]; then
-          echo "::set-output name=HAS_CHANGES::"true""
+            echo "::set-output name=HAS_CHANGES::"true""
           fi
 
       - name: Get Commit Messages
         id: get_commit
         if: steps.check_changes.outputs.HAS_CHANGES
-        run: |
-          # Obtenha as mensagens de commit desde o último tag
+        run: |          # Obtenha as mensagens de commit desde o último tag
           # COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B)
           COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:%B | tr '\n' '|')
 
