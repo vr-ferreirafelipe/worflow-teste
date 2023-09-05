@@ -28,7 +28,7 @@ jobs:
     needs: 
       - run_pre_release
       - run_prepare_new_release
-    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE == 'true' && ${{ always() }}
+    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE == 'true'
 
     runs-on: ubuntu-latest
 
