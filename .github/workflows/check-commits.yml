@@ -40,7 +40,7 @@ jobs:
           # Obtenha a quantidade de novos commits
           # Se IS_FIRST_TAG retornar vazio considera os commits da branch main
           # Se não considera os commits da feitos depois da ultima TAG
-          COMMIT_COUNT=$([ -z "IS_FIRST_TAG" ] && echo "$(git rev-list main --count)" || echo "$(git rev-list $(git describe --tags --abbrev=0 @^)..@ --count)")
+          COMMIT_COUNT=$([ -z $IS_FIRST_TAG ] && echo "$(git rev-list main --count)" || echo "$(git rev-list $(git describe --tags --abbrev=0 @^)..@ --count)")
 
           # verifica se existem commits pendente
           if [ "$COMMIT_COUNT" -gt 0 ]; then
