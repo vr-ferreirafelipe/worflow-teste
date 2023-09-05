@@ -1,0 +1,65 @@
+name: Pre Release
+
+on:
+  workflow_call:
+    secrets:
+      VR_PACKAGE_TOKEN:
+        required: true
+    outputs:
+      LAST_VERSION:
+        description: "Armazena ultima tag gerada ou 0.0.0 se nao existir nenhuma TAG"
+        value: ${{ jobs.get_last_tag.outputs.LAST_VERSION }}
+      IS_FIRST_TAG:
+        description: "Verifica se existem novos commits"
+        value: ${{ jobs.check-last_release.outputs.IS_FIRST_TAG }}
+      COMMIT_MESSAGES:
+        description: "Armazena as messagens de novos commits"
+        value: ${{ jobs.check-commit.outputs.COMMIT_MESSAGES }}
+      HAS_CHANGES:
+        description: "Verifica se existem novos commits"
+        value: ${{ jobs.check-commit.outputs.HAS_CHANGES }}
+
+jobs:
+  check-last_release:
+    name: Check Last Release
+    runs-on: ubuntu-latest
+    outputs:
+      
+      LAST_VERSION: ${{ steps.get_last_version.outputs.LAST_VERSION }}
+      IS_FIRST_TAG: ${{ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }}
+      
+      HAS_CHANGES: ${{ steps.check_changes.outputs.HAS_CHANGES }}
+      COMMIT_MESSAGES: ${{ steps.get_commit.outputs.COMMIT_MESSAGES }}
+
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.VR_PACKAGE_TOKEN }}
+          fetch-depth: 0
+          ref: main
+
+      - name: Check already exists releases
+        id: check_already_exists_tags
+        run: |
+          # verifica se ja existem TAGS
+          if [ "$(git tag | wc -l)" -eq 0 ]; then
+            echo "::set-output name=IS_FIRST_TAG::"true""
+          fi
+
+      - name: Get Last Release Tag 
+        id: get_last_version
+        run: |
+          IS_FIRST_TAG=${{ steps.check_already_exists_tags.outputs.IS_FIRST_TAG }}
+
+          # verifica se IS_FIRST_TAG é vazio
+          if [ -z "$IS_FIRST_TAG" ]; then
+            # Inicialize uma variável de versão com a última tag
+            LAST_VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
+            echo "::set-output name=last_version::$LAST_VERSION"
+          else 
+            echo "::set-output name=LAST_VERSION::"0.0.0""
+          fi
+
+          echo "LAST_VERSION = $LAST_VERSION"
