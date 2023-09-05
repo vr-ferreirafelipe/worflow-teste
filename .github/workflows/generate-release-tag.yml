@@ -68,27 +68,23 @@ jobs:
           if [[ $COMMIT_MESSAGES =~ "BREAKING CHANGE" ]]; then
             # Gera nova tag MAJOR
             NEW_VERSION="$((LAST_MAJOR_VERSION + 1)).0.0"
-            HAS_RELEASE=true
           elif [[ $COMMIT_MESSAGES =~ "feat" ]]; then
             # Gera nova tag MINOR
             NEW_VERSION="$LAST_MAJOR_VERSION.$((LAST_MINOR_VERSION + 1)).0"
-            HAS_RELEASE=true
           elif [[ $COMMIT_MESSAGES =~ "fix" ]]; then
             # Gera nova tag patch
             NEW_VERSION="$LAST_MAJOR_VERSION.$LAST_MINOR_VERSION.$((LAST_PATCH_VERSION + 1))"
-            HAS_RELEASE=true
           else
             # Nenhum commit gerará uma nova release
             echo "Nenhum commit nesta push gerará uma nova release."
           fi 
 
-          echo "::set-output name=HAS_RELEASE::$HAS_RELEASE"
           echo "::set-output name=NEW_VERSION::$NEW_VERSION"
         shell: bash
 
       - name: Validate Next Version TAG 
         id: validate_next_version_tag
-        if: steps.calculate_next_version.outputs.HAS_RELEASE
+        if: steps.calculate_next_version.outputs.NEW_VERSION
         run: |
           LAST_VERSION=${{ steps.get_last_version.outputs.last_version }}
           echo "LAST_VERSION $LAST_VERSION"
