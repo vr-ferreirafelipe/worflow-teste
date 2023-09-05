@@ -32,8 +32,10 @@ jobs:
       - name: Check Changes
         id: check_changes
         run: |
-          # verifica se ja existem tags
-          IS_FIRST_TAG=$([ -z "$(git show-ref --tags)" ] && echo "true")
+          # verifica se ja existem TAGS
+          if[-z "$(git show-ref --tags)"]; then
+            IS_FIRST_TAG="true"
+          fi
 
           # Obtenha a quantidade de novos commits
           # Se IS_FIRST_TAG retornar vazio considera os commits da branch main
