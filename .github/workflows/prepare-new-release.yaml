@@ -16,9 +16,9 @@ on:
       NEW_VERSION:
         description: "Armazena tag de nova RELEASE"
         value: ${{ jobs.generate-version.outputs.NEW_VERSION }}
-      HAS_RELEASE:
+      HAS_NEW_RELEASE:
         description: "Valida se os commits devem gerar novas RELEASE"
-        value: ${{ jobs.generate-version.outputs.HAS_RELEASE }}
+        value: ${{ jobs.generate-version.outputs.HAS_NEW_RELEASE }}
 
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       NEW_VERSION: ${{ steps.generate_next_version.outputs.NEW_VERSION }}
-      HAS_RELEASE: ${{ steps.generate_next_version.outputs.HAS_RELEASE }}
+      HAS_NEW_RELEASE: ${{ steps.validate_next_version.outputs.HAS_NEW_RELEASE }}
 
     steps:
       - name: Checkout
@@ -70,7 +70,7 @@ jobs:
         shell: bash
 
       - name: Validate Next Version TAG 
-        id: validate_next_version_tag
+        id: validate_next_version
         if: steps.generate_next_version.outputs.NEW_VERSION
         run: |
           lAST_VERSION=${{ inputs.LAST_VERSION }}
@@ -93,4 +93,6 @@ jobs:
             echo "A nova versão não é superior à última versão. Saindo do fluxo de trabalho."
             exit 1
           fi
+
+          echo "::set-output name=HAS_NEW_RELEASE::true"
         shell: bash

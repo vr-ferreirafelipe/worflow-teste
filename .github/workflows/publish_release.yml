@@ -44,7 +44,7 @@ jobs:
 
   prepare_branch_main:
     name: Prepare Branch Main
-    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && ${{ always() }}
+    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE && ${{ always() }}
     needs: 
       - run_pre_release
       - run_prepare_new_release
@@ -60,12 +60,10 @@ jobs:
           ref: main
 
       - name: Git Config
-        if: needs.run_prepare_new_release.outputs.HAS_RELEASE
         run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
 
       - name: Upgrade Release
         id: upgrade_release
-        if: needs.run_prepare_new_release.outputs.HAS_RELEASE
         run: |
           NEW_VERSION=${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
 
@@ -76,7 +74,7 @@ jobs:
       
   publish_release:
     name: Publish Release
-    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && ${{ always() }}
+    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE && ${{ always() }}
     needs: 
       - run_pre_release
       - run_prepare_new_release
@@ -94,20 +92,20 @@ jobs:
 
       - name: Create Release
         id: create_release
-        if: needs.run_prepare_new_release.outputs.HAS_RELEASE
-        uses: ncipollo/release-action@v1
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
-      #   with:
-      #     tag_name: v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
-      #     release_name: Release v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
-      #     commit: main
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
         with:
-          name: ${{ inputs.versao }}
-          tag: v${{ inputs.versao }}
+          tag_name: v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
+          release_name: Release v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
           commit: main
-          draft: false
-          prerelease: false
-          token: ${{ secrets.VRPACKAGETOKEN }}
+
+        # uses: ncipollo/release-action@v1
+        # with:
+        #   name: ${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
+        #   tag: v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
+        #   commit: main
+        #   draft: false
+        #   prerelease: false
+        #   token: ${{ secrets.VRPACKAGETOKEN }}
 
