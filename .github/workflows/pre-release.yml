@@ -60,7 +60,8 @@ jobs:
             LAST_VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
             echo "::set-output name=last_version::$LAST_VERSION"
           else 
-            echo "::set-output name=LAST_VERSION::"0.0.0""
+            LAST_VERSION="0.0.0"
+            echo "::set-output name=last_version::$LAST_VERSION"
           fi
 
           echo "LAST_VERSION = $LAST_VERSION"
