@@ -4,6 +4,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  test_jira:
+    name: Run Teste Jira Integration
+    uses: ./.github/workflows/jira_integration.yml
+    secrets:
+      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+      JIRA_BASE_URL: ${{ secrets.VRJIRAURL }}
+      JIRA_USER_EMAIL: ${{ secrets.VRJIRAEMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.VRJIRAAPITOKEN }}
+
   run_pre_release:
     name: Run Pre Release
     uses: ./.github/workflows/pre-release.yml
