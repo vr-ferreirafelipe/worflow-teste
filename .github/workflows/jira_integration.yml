@@ -5,6 +5,12 @@ on:
     secrets:
       VR_PACKAGE_TOKEN:
         required: true
+      JIRA_BASE_URL:
+        required: true
+      JIRA_USER_EMAIL:
+        required: true
+      JIRA_API_TOKEN:
+        required: true
 
 jobs:
   get-task:
