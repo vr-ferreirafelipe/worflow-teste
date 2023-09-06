@@ -23,7 +23,7 @@ jobs:
       LAST_VERSION: ${{ needs.run_pre_release.outputs.LAST_VERSION }}
       COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }}      
 
-  prepare_branch_main:
+  publish_release:
     name: Prepare Branch Main
     needs: 
       - run_pre_release
@@ -43,8 +43,8 @@ jobs:
       - name: Git Config
         run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
 
-      - name: Upgrade Release
-        id: upgrade_release
+      - name: Upgrade release on packages
+        id: upgrade_release_package
         run: |
           HAS_NEW_RELEASE=${{ needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE }}
           NEW_VERSION=${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
@@ -53,16 +53,9 @@ jobs:
           git add . 
           git commit -m "ci: Entrega da versão $NEW_VERSION"
           git push
-      
-      - name: Checkout código
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.VRPACKAGETOKEN }}
-          fetch-depth: 0
-          ref: main
 
-      - name: Create Release
-        id: create_release
+      - name: Publish Release
+        id: publish_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
