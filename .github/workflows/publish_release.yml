@@ -13,62 +13,62 @@ jobs:
       JIRA_USER_EMAIL: ${{ secrets.VRJIRAEMAIL }}
       JIRA_API_TOKEN: ${{ secrets.VRJIRAAPITOKEN }}
 
-  run_pre_release:
-    name: Run Pre Release
-    uses: ./.github/workflows/pre-release.yml
-    secrets:
-      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+  # run_pre_release:
+  #   name: Run Pre Release
+  #   uses: ./.github/workflows/pre-release.yml
+  #   secrets:
+  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
-  run_prepare_new_release:
-    name: Run Prepare new release
-    uses: ./.github/workflows/prepare-new-release.yaml
+  # run_prepare_new_release:
+  #   name: Run Prepare new release
+  #   uses: ./.github/workflows/prepare-new-release.yaml
     
-    needs: run_pre_release
-    if: needs.run_pre_release.outputs.HAS_CHANGES
+  #   needs: run_pre_release
+  #   if: needs.run_pre_release.outputs.HAS_CHANGES
     
-    secrets:
-      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
-    with:
-      LAST_VERSION: ${{ needs.run_pre_release.outputs.LAST_VERSION }}
-      COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }}      
+  #   secrets:
+  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+  #   with:
+  #     LAST_VERSION: ${{ needs.run_pre_release.outputs.LAST_VERSION }}
+  #     COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }}      
 
-  publish_release:
-    name: Prepare Branch Main
-    needs: 
-      - run_pre_release
-      - run_prepare_new_release
-    if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE
+  # publish_release:
+  #   name: Prepare Branch Main
+  #   needs: 
+  #     - run_pre_release
+  #     - run_prepare_new_release
+  #   if: github.ref == 'refs/heads/main' && needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.VRPACKAGETOKEN }}
-          fetch-depth: 0
-          ref: main
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         token: ${{ secrets.VRPACKAGETOKEN }}
+  #         fetch-depth: 0
+  #         ref: main
 
-      - name: Git Config
-        run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
+  #     - name: Git Config
+  #       run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
 
-      - name: Upgrade release on packages
-        id: upgrade_release_package
-        run: |
-          HAS_NEW_RELEASE=${{ needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE }}
-          NEW_VERSION=${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
+  #     - name: Upgrade release on packages
+  #       id: upgrade_release_package
+  #       run: |
+  #         HAS_NEW_RELEASE=${{ needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE }}
+  #         NEW_VERSION=${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
 
-          npm --no-git-tag-version version $NEW_VERSION
-          git add . 
-          git commit -m "ci: Entrega da versão $NEW_VERSION"
-          git push
+  #         npm --no-git-tag-version version $NEW_VERSION
+  #         git add . 
+  #         git commit -m "ci: Entrega da versão $NEW_VERSION"
+  #         git push
 
-      - name: Publish Release
-        id: publish_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
-        with:
-          tag_name: v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
-          release_name: Release v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
-          commitish: main
+  #     - name: Publish Release
+  #       id: publish_release
+  #       uses: actions/create-release@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+  #       with:
+  #         tag_name: v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
+  #         release_name: Release v${{ needs.run_prepare_new_release.outputs.NEW_VERSION }}
+  #         commitish: main
