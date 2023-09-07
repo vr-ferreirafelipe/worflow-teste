@@ -33,10 +33,10 @@ jobs:
         #   with:
         #     version: 1.0.27
 
-        # - name: Find Issue Key
-        #   uses: ./
-        #   with:
-        #     from: commits
+        - name: Find Issue Key
+          uses: ./
+          with:
+            from: commits
 
         # - name: Transition issue
         #   uses: atlassian/gajira-transition@master
