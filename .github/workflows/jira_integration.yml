@@ -18,6 +18,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Fetch Jira Issue
+      run: |
+        # Recupere as variáveis de ambiente
+        JIRA_USERNAME=$JIRA_USERNAME
+        JIRA_API_TOKEN=$JIRA_API_TOKEN
+        JIRA_BASE_URL=$JIRA_BASE_URL
+        JIRA_ISSUE_KEY=$JIRA_ISSUE_KEY
+
+        # Faça uma solicitação à API do Jira para buscar a tarefa
+        ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+          -X GET "$JIRA_BASE_URL/rest/api/2/issue/$JIRA_ISSUE_KEY")
+
+        # Exiba os detalhes da tarefa no console
+        echo "$ISSUE_JSON"
+        
     #     - name: Checkout
     #       uses: actions/checkout@v3
 
@@ -27,21 +53,6 @@ jobs:
     #         JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
     #         JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
     #         JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-
-      - name: Jira Description
-        id: jira_description
-        uses: cakeinpanic/jira-description-action@v0.5.1
-        with:
-          github-token: ${{ secrets.VR_PACKAGE_TOKEN }}
-          jira-token: ${{ secrets.JIRA_API_TOKEN }}
-          jira-base-url: ${{ secrets.JIRA_BASE_URL }}
-          custom-issue-number-regexp: '^\d+'
-          jira-project-key: 'MOB-1094'
-      
-      - name: ISSUE KEY
-        run: |
-          ISSUE_KEY=${{ steps.jira_description.outputs.jira-issue-found }}
-          echo "jira issue $ISSUE_KEY"
 
         # - name: Setup
         #   uses: atlassian/gajira-cli@v3
