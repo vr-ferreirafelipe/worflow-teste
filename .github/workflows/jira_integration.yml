@@ -32,10 +32,10 @@ jobs:
     - name: Fetch Jira Issue
       run: |
         # Recupere as variáveis de ambiente
-        JIRA_USERNAME=$JIRA_USERNAME
-        JIRA_API_TOKEN=$JIRA_API_TOKEN
-        JIRA_BASE_URL=$JIRA_BASE_URL
-        JIRA_ISSUE_KEY=$JIRA_ISSUE_KEY
+        JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
+        JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
+        JIRA_ISSUE_KEY=MOB-1094
 
         # Faça uma solicitação à API do Jira para buscar a tarefa
         ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
