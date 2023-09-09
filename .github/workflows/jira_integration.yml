@@ -36,10 +36,11 @@ jobs:
         JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
         JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
         JIRA_ISSUE_KEY=MOB-1094
+        JIRA_FIELDS="summary,customfield_10037"
 
         # Faça uma solicitação à API do Jira para buscar a tarefa
         ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-          -X GET "$JIRA_BASE_URL/rest/api/2/issue/$JIRA_ISSUE_KEY")
+          -X GET "$JIRA_BASE_URL/rest/api/2/issue/$JIRA_ISSUE_KEY?fields=$JIRA_FIELDS")
 
         # Exiba os detalhes da tarefa no console
         echo "$ISSUE_JSON"
