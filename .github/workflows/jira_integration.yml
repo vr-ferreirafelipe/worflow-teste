@@ -50,10 +50,10 @@ jobs:
         echo "::set-output name=DOC_INFO::$(echo $ISSUE_JSON | jq -r '.fields.customfield_10037')"
         
 
-    - name: Fetch Jira Issue
+    - name: ECHO Jira Issue
       run: |
-        TITLE {{ steps.fetch_jira_issue.outputs.TITLE }}
-        DOC_INFO {{ steps.fetch_jira_issue.outputs.DOC_INFO }}
+        TITLE={{ steps.fetch_jira_issue.outputs.TITLE }}
+        DOC_INFO={{ steps.fetch_jira_issue.outputs.DOC_INFO }}
 
         echo $TITLE
         echo $DOC_INFO
