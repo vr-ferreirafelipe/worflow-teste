@@ -30,6 +30,7 @@ jobs:
       run: npm install
 
     - name: Fetch Jira Issue
+      id: fetch_jira_issue
       run: |
         # Recupere as variáveis de ambiente
         JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
@@ -44,6 +45,18 @@ jobs:
 
         # Exiba os detalhes da tarefa no console
         echo "$ISSUE_JSON"
+
+        echo "::set-output name=TITLE::$(echo $ISSUE_JSON | jq -r '.fields.summary')"
+        echo "::set-output name=DOC_INFO::$(echo $ISSUE_JSON | jq -r '.fields.customfield_10037')"
+        
+
+    - name: Fetch Jira Issue
+      run: |
+        TITLE {{ steps.fetch_jira_issue.outputs.TITLE }}
+        DOC_INFO {{ steps.fetch_jira_issue.outputs.DOC_INFO }}
+
+        echo $TITLE
+        echo $DOC_INFO
         
     #     - name: Checkout
     #       uses: actions/checkout@v3
