@@ -12,7 +12,7 @@ on:
       JIRA_API_TOKEN:
         required: true
     inputs:
-      JIRA_ISSUE_PREFIX:
+      get_put_JIRA_ISSUE_PREFIX:
         required: true
         type: string
       COMMIT_MESSAGES:
@@ -36,7 +36,7 @@ jobs:
         COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
 
         # Encontra nas mensagens de commits as tarefas referenciadas.
-        ALL_ISSUE_KEYS=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.JIRA_ISSUE_PREFIX }}-[0-9]\+')
+        ALL_ISSUE_KEYS=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.get_put_JIRA_ISSUE_PREFIX }}-[0-9]\+')
         
         # Remove resultados diplicados
         DISTINCT_ISSUE_KEYS=$(echo "$ALL_ISSUE_KEYS" | sort | uniq)
@@ -48,14 +48,17 @@ jobs:
           echo "Nenhuma tarefa foi referencia nos ultimos commits."
         fi
 
-    - name: Fetch Jira Issue
-      id: fetch_jira_issue
+    - name: GET and Put Jira Issue
+      id: get_put_jira_issue
       if: steps.check_issue_key.outputs.ISSUE_KEYS
       run: |
         # Recupere as variáveis de ambiente
         JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
         JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
         JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
+
+        # Recuperar os inputs
+        NEW_VERSION=${{ inputs.NEW_VERSION }}
 
         # Definir os compos jira
         JIRA_FIELDS="summary,customfield_10037"
@@ -67,35 +70,11 @@ jobs:
           ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
             -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
 
-          echo "::set-output name=TITLE_$ISSUE_KEY::$ISSUE_KEY - $TITLE"
-          echo "::set-output name=DOC_INFO_$ISSUE_KEY::$ISSUE_KEY - $DOC_INFO"
-        done
+          # Desestrutura o objeto de resposta
+          TITLE=$(echo $ISSUE_JSON | jq -r '.fields.summary')
+          DOC_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10037')
 
-    - name: ECHO Jira Issue
-      run: |
-        TITLE="${{ steps.fetch_jira_issue.outputs.TITLE }}"
-        DOC_INFO="${{ steps.fetch_jira_issue.outputs.DOC_INFO }}"
-
-        echo "$TITLE"
-        echo "$DOC_INFO"
-
-    - name: Alter summary
-      if: steps.check_issue_key.outputs.ISSUE_KEYS
-      run: |
-        # Recupere as variáveis de ambiente
-        JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
-        JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
-
-        NEW_VERSION=${{ inputs.NEW_VERSION }}
-
-        ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
-
-        for ISSUE_KEY in $ISSUE_KEYS; do
-          TITLE="${{ steps.fetch_jira_issue.outputs.TITLE_$ISSUE_KEY }}"
-          DOC_INFO="${{ steps.fetch_jira_issue.outputs.DOC_INFO_$ISSUE_KEY }}"
-
-          # Altera a descricao da tarefa pelo JIRA API.
+          # Altera o titlul da tarefa concatenando a release.
           curl -u $JIRA_USERNAME:$JIRA_API_TOKEN \
               -X PUT "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY" \
               -H "Content-Type: application/json" \
@@ -104,4 +83,15 @@ jobs:
                   "summary": "'"${TITLE} (${NEW_VERSION})"'"
                 }
               }'
+
+          echo "::set-output name=TITLE::$(echo $ISSUE_JSON | jq -r '.fields.summary')"
+          echo "::set-output name=DOC_INFO::$(echo $ISSUE_JSON | jq -r '.fields.customfield_10037')"
         done
+
+    - name: ECHO Jira Issue
+      run: |
+        TITLE="${{ steps.get_put_jira_issue.outputs.TITLE }}"
+        DOC_INFO="${{ steps.get_put_jira_issue.outputs.DOC_INFO }}"
+
+        echo "$TITLE"
+        echo "$DOC_INFO"
