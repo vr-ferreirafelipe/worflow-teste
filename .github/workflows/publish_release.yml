@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
 
 jobs:
+  run_pre_release:
+    name: Run Pre Release
+    uses: ./.github/workflows/pre-release.yml
+    secrets:
+      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+
   test_jira:
     name: Run Teste Jira Integration
     uses: ./.github/workflows/jira_integration.yml
@@ -12,12 +18,10 @@ jobs:
       JIRA_BASE_URL: ${{ secrets.VRJIRAURL }}
       JIRA_USER_EMAIL: ${{ secrets.VRJIRAEMAIL }}
       JIRA_API_TOKEN: ${{ secrets.VRJIRAAPITOKEN }}
+    with:
+      JIRA_ISSUE_PREFIX: 'MOB'
+      COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }} 
 
-  # run_pre_release:
-  #   name: Run Pre Release
-  #   uses: ./.github/workflows/pre-release.yml
-  #   secrets:
-  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
   # run_prepare_new_release:
   #   name: Run Prepare new release
