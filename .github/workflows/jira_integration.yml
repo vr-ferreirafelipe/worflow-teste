@@ -63,7 +63,7 @@ jobs:
         # Definir os compos jira
         JIRA_FIELDS="summary,customfield_10037"
 
-        ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
+        ISSUE_KEYS="${{ steps.check_issue_key.outputs.ISSUE_KEYS }}"
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           echo $ISSUE_KEY
