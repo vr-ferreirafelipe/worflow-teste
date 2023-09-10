@@ -13,6 +13,8 @@ jobs:
   test_jira:
     name: Run Teste Jira Integration
     uses: ./.github/workflows/jira_integration.yml
+    needs: run_pre_release
+    if: needs.run_pre_release.outputs.HAS_CHANGES
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
       JIRA_BASE_URL: ${{ secrets.VRJIRAURL }}
