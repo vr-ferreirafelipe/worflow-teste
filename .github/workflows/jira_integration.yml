@@ -43,7 +43,7 @@ jobs:
         echo $DISTINCT_ISSUE_KEYS
 
         if [ -n "$DISTINCT_ISSUE_KEYS" ]; then
-          echo "::set-output name=ISSUE_KEYS::$DISTINCT_ISSUE_KEYS"
+          echo "::set-output name=ISSUE_KEYS::"$DISTINCT_ISSUE_KEYS""
         else
           echo "Nenhuma tarefa foi referencia nos ultimos commits."
         fi
@@ -67,7 +67,7 @@ jobs:
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           echo $ISSUE_KEY
-          
+
           # Busca tarefa pelo JIRA API.
           ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
             -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
