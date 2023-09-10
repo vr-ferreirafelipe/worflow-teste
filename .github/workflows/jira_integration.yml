@@ -12,7 +12,7 @@ on:
       JIRA_API_TOKEN:
         required: true
     inputs:
-      get_put_JIRA_ISSUE_PREFIX:
+      JIRA_ISSUE_PREFIX:
         required: true
         type: string
       COMMIT_MESSAGES:
@@ -36,7 +36,7 @@ jobs:
         COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
 
         # Encontra nas mensagens de commits as tarefas referenciadas.
-        ALL_ISSUE_KEYS=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.get_put_JIRA_ISSUE_PREFIX }}-[0-9]\+')
+        ALL_ISSUE_KEYS=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.JIRA_ISSUE_PREFIX }}-[0-9]\+')
         
         # Remove resultados diplicados
         DISTINCT_ISSUE_KEYS=$(echo "$ALL_ISSUE_KEYS" | sort | uniq)
