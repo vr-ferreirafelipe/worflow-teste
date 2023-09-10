@@ -86,6 +86,7 @@ jobs:
 
         ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
 
+        NEW_TITLE="${TITLE} (RELEASE Version)"
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           # Altera a descricao da tarefa pelo JIRA API.
@@ -94,7 +95,7 @@ jobs:
               -H "Content-Type: application/json" \
               --data '{
                 "fields": {
-                  "description": "${TITLE} (RELEASE Version)"
+                  "description": "'"$NEW_TITLE"'"
                 }
               }'
         done
