@@ -39,7 +39,6 @@ jobs:
       JIRA_ISSUE_PREFIX: 'MOB'
       COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }} 
       NEW_VERSION: ${{ needs.run_prepare_new_release.outputs.NEW_VERSION }} 
-      HAS_NEW_RELEASE: ${{ needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE }} 
 
   # publish_release:
   #   name: Prepare Branch Main

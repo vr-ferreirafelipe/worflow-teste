@@ -21,8 +21,6 @@ on:
       NEW_VERSION:
         required: true
         type: string
-      HAS_NEW_RELEASE:
-        type: boolean
 
 jobs:
 
@@ -80,7 +78,7 @@ jobs:
         echo "$DOC_INFO"
 
     - name: Alter summary
-      if: inputs.HAS_NEW_RELEASE
+      if: inputs.NEW_VERSION
       run: |
         # Recupere as variáveis de ambiente
         JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
