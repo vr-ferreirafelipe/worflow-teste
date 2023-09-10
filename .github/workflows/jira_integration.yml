@@ -32,12 +32,16 @@ jobs:
         COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
 
         # Encontra nas mensagens de commits as tarefas referenciadas.
-        ISSUE_KEYS=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.JIRA_ISSUE_PREFIX }}-[0-9]\+')
+        ALL_ISSUE_KEYS=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.JIRA_ISSUE_PREFIX }}-[0-9]\+')
         
         # Remove resultados diplicados
-        ISSUE_KEYS_DISTINCT=$(echo "$ISSUE_KEYS" | sort | uniq)
+        DISTINCT_ISSUE_KEYS=$(echo "$ISSUE_KEYS" | sort | uniq)
 
-        echo $ISSUE_KEYS_DISTINCT
+        if [ -n "$unique_matches" ]; then
+          echo "::set-output name=ISSUE_KEYS::$ISSUE_KEYS_DISTINCT"
+        else
+          echo "Nenhuma tarefa foi referencia nos ultimos commits."
+        fi
 
     - name: Fetch Jira Issue
       id: fetch_jira_issue
@@ -46,19 +50,22 @@ jobs:
         JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
         JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
         JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
-        JIRA_ISSUE_KEY=MOB-1094
+
+        # Definir os compos jira
         JIRA_FIELDS="summary,customfield_10037"
 
-        # Faça uma solicitação à API do Jira para buscar a tarefa
-        ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-          -X GET "$JIRA_BASE_URL/rest/api/2/issue/$JIRA_ISSUE_KEY?fields=$JIRA_FIELDS")
+        ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
 
-        # Exiba os detalhes da tarefa no console
-        echo "$ISSUE_JSON"
+        for ISSUE_KEY in $ISSUE_KEYS; do
+          echo "Valor único encontrado: $issue_key"
 
-        echo "::set-output name=TITLE::$(echo $ISSUE_JSON | jq -r '.fields.summary')"
-        echo "::set-output name=DOC_INFO::$(echo $ISSUE_JSON | jq -r '.fields.customfield_10037')"
-        
+          # Busca tarefa pelo JIRA API.
+          ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+            -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
+
+          echo "::set-output name=TITLE::$(echo $ISSUE_JSON | jq -r '.fields.summary')"
+          echo "::set-output name=DOC_INFO::$(echo $ISSUE_JSON | jq -r '.fields.customfield_10037')"
+        done
 
     - name: ECHO Jira Issue
       run: |
