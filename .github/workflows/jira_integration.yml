@@ -67,8 +67,8 @@ jobs:
           ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
             -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
 
-          echo "::set-output name=TITLE::$(echo $ISSUE_JSON | jq -r '.fields.summary')"
-          echo "::set-output name=DOC_INFO::$(echo $ISSUE_JSON | jq -r '.fields.customfield_10037')"
+          echo "::set-output name=TITLE_$ISSUE_KEY::$ISSUE_KEY - $TITLE"
+          echo "::set-output name=DOC_INFO_$ISSUE_KEY::$ISSUE_KEY - $DOC_INFO"
         done
 
     - name: ECHO Jira Issue
@@ -87,13 +87,14 @@ jobs:
         JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
         JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
 
-        TITLE="${{ steps.fetch_jira_issue.outputs.TITLE }}"
-        DOC_INFO="${{ steps.fetch_jira_issue.outputs.DOC_INFO }}"
         NEW_VERSION=${{ inputs.NEW_VERSION }}
 
         ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
 
         for ISSUE_KEY in $ISSUE_KEYS; do
+          TITLE="${{ steps.fetch_jira_issue.outputs.TITLE_$ISSUE_KEY }}"
+          DOC_INFO="${{ steps.fetch_jira_issue.outputs.DOC_INFO_$ISSUE_KEY }}"
+
           # Altera a descricao da tarefa pelo JIRA API.
           curl -u $JIRA_USERNAME:$JIRA_API_TOKEN \
               -X PUT "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY" \
