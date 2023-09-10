@@ -37,7 +37,7 @@ jobs:
         # Remove resultados diplicados
         DISTINCT_ISSUE_KEYS=$(echo "$ISSUE_KEYS" | sort | uniq)
 
-        if [ -n "$unique_matches" ]; then
+        if [ -n "$DISTINCT_ISSUE_KEYS" ]; then
           echo "::set-output name=ISSUE_KEYS::$ISSUE_KEYS_DISTINCT"
         else
           echo "Nenhuma tarefa foi referencia nos ultimos commits."
@@ -45,6 +45,7 @@ jobs:
 
     - name: Fetch Jira Issue
       id: fetch_jira_issue
+      if: steps.check_issue_key.outputs.ISSUE_KEYS
       run: |
         # Recupere as variáveis de ambiente
         JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
