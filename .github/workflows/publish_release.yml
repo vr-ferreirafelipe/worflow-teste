@@ -29,7 +29,7 @@ jobs:
     needs: 
       - run_pre_release
       - run_prepare_new_release
-    if: needs.run_pre_release.outputs.HAS_CHANGES && needs.run_pre_release.outputs.HAS_NEW_RELEASE
+    if: needs.run_pre_release.outputs.HAS_CHANGES && needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
       JIRA_BASE_URL: ${{ secrets.VRJIRAURL }}
