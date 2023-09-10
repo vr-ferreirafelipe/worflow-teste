@@ -18,6 +18,12 @@ on:
       COMMIT_MESSAGES:
         required: true
         type: string
+      NEW_VERSION:
+        required: true
+        type: string
+      HAS_NEW_RELEASE:
+        required: true
+        type: boolean
 
 jobs:
 
@@ -75,6 +81,7 @@ jobs:
         echo "$DOC_INFO"
 
     - name: Alter summary
+      if: inputs.HAS_NEW_RELEASE
       run: |
         # Recupere as variáveis de ambiente
         JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
@@ -83,10 +90,11 @@ jobs:
 
         TITLE="${{ steps.fetch_jira_issue.outputs.TITLE }}"
         DOC_INFO="${{ steps.fetch_jira_issue.outputs.DOC_INFO }}"
+        NEW_VERSION=${{ inputs.NEW_VERSION }}
 
         ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
 
-        NEW_TITLE="${TITLE} (RELEASE Version)"
+        NEW_TITLE="${TITLE} (NEW_VERSION)"
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           # Altera a descricao da tarefa pelo JIRA API.

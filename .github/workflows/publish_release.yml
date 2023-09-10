@@ -10,10 +10,25 @@ jobs:
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
+  run_prepare_new_release:
+    name: Run Prepare new release
+    uses: ./.github/workflows/prepare-new-release.yaml
+    
+    needs: run_pre_release
+    if: needs.run_pre_release.outputs.HAS_CHANGES
+    
+    secrets:
+      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+    with:
+      LAST_VERSION: ${{ needs.run_pre_release.outputs.LAST_VERSION }}
+      COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }} 
+
   test_jira:
     name: Run Teste Jira Integration
     uses: ./.github/workflows/jira_integration.yml
-    needs: run_pre_release
+    needs: 
+      - run_pre_release
+      - run_prepare_new_release
     if: needs.run_pre_release.outputs.HAS_CHANGES
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
@@ -23,20 +38,8 @@ jobs:
     with:
       JIRA_ISSUE_PREFIX: 'MOB'
       COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }} 
-
-
-  # run_prepare_new_release:
-  #   name: Run Prepare new release
-  #   uses: ./.github/workflows/prepare-new-release.yaml
-    
-  #   needs: run_pre_release
-  #   if: needs.run_pre_release.outputs.HAS_CHANGES
-    
-  #   secrets:
-  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
-  #   with:
-  #     LAST_VERSION: ${{ needs.run_pre_release.outputs.LAST_VERSION }}
-  #     COMMIT_MESSAGES: ${{ needs.run_pre_release.outputs.COMMIT_MESSAGES }}      
+      NEW_VERSION: ${{ needs.run_prepare_new_release.outputs.NEW_VERSION }} 
+      HAS_NEW_RELEASE: ${{ needs.run_prepare_new_release.outputs.HAS_NEW_RELEASE }} 
 
   # publish_release:
   #   name: Prepare Branch Main
