@@ -5,12 +5,13 @@ on:
 
 jobs:
   run_check_changes:
+    name: Run check changes
     uses: ./.github/workflows/check-changes.yml
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
   run_generate_release_tag:
-    name: Run Prepare new release
+    name: Run generate new release
     uses: ./.github/workflows/generate-release-tag.yaml
     
     needs: run_check_changes

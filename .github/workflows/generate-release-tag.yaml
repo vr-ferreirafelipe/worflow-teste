@@ -1,4 +1,4 @@
-name: Prepare new release
+name: Prepara nova tag de versão pelos tipos de commit
 
 on:
   workflow_call:
@@ -23,7 +23,7 @@ on:
 
 jobs:
   generate-version:
-    name: Generate Tag
+    name: Define nova tag de versão
     runs-on: ubuntu-latest
     outputs:
       NEW_VERSION: ${{ steps.generate_next_version.outputs.NEW_VERSION }}
