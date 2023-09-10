@@ -13,6 +13,7 @@ on:
         required: true
 
 jobs:
+
   get-task:
     # name: Get taks on jira
     runs-on: ubuntu-latest
@@ -21,13 +22,10 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Find in commit messages
+      uses: atlassian/gajira-find-issue-key@v3
       with:
-        node-version: 14
-
-    - name: Install Dependencies
-      run: npm install
+        from: commits
 
     - name: Fetch Jira Issue
       id: fetch_jira_issue
