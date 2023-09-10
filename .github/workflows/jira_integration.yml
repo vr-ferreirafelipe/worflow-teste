@@ -1,4 +1,4 @@
-name: Jira
+name: Integração com API JIRA 
 
 on:
   workflow_call:
@@ -23,14 +23,13 @@ on:
         type: string
 
 jobs:
-
-  get-task:
-    # name: Get taks on jira
+  get_and_update_issue:
+    name: Buscar informações e Atualizar JIRA
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check Issue in commit message
-      id: check_issue_key
+    - name: Get issue key from commit messages
+      id: get_issue_key
       if: inputs.NEW_VERSION
       run: |
         COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
@@ -50,7 +49,7 @@ jobs:
 
     - name: GET and Put Jira Issue
       id: get_put_jira_issue
-      if: steps.check_issue_key.outputs.ISSUE_KEYS
+      if: steps.get_issue_key.outputs.ISSUE_KEYS
       run: |
         # Recupere as variáveis de ambiente
         JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
@@ -63,7 +62,7 @@ jobs:
         # Definir os compos jira
         JIRA_FIELDS="summary,customfield_10037"
 
-        ISSUE_KEYS="${{ steps.check_issue_key.outputs.ISSUE_KEYS }}"
+        ISSUE_KEYS="${{ steps.get_issue_key.outputs.ISSUE_KEYS }}"
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           echo $ISSUE_KEY
