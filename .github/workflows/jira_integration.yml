@@ -45,7 +45,7 @@ jobs:
 
     - name: Fetch Jira Issue
       id: fetch_jira_issue
-      if: steps.check_issue_key.outputs.ISSUE_KEYS
+      # if: steps.check_issue_key.outputs.ISSUE_KEYS
       run: |
         # Recupere as variáveis de ambiente
         JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
@@ -56,6 +56,7 @@ jobs:
         JIRA_FIELDS="summary,customfield_10037"
 
         ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
+        echo $ISSUE_KEYS
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           echo "Valor único encontrado: $issue_key"
