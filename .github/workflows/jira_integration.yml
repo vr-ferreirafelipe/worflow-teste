@@ -58,8 +58,6 @@ jobs:
         ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
 
         for ISSUE_KEY in $ISSUE_KEYS; do
-          echo "Valor único encontrado: $issue_key"
-
           # Busca tarefa pelo JIRA API.
           ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
             -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
@@ -75,6 +73,26 @@ jobs:
 
         echo "$TITLE"
         echo "$DOC_INFO"
+
+    - name: Alter description
+      run: |
+        TITLE="${{ steps.fetch_jira_issue.outputs.TITLE }}"
+        DOC_INFO="${{ steps.fetch_jira_issue.outputs.DOC_INFO }}"
+
+        ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
+
+
+        for ISSUE_KEY in $ISSUE_KEYS; do
+          # Altera a descricao da tarefa pelo JIRA API.
+          curl -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+              -X PUT "$JIRA_BASE_URL/rest/api/2/issue/$JIRA_ISSUE_KEY" \
+              -H "Content-Type: application/json" \
+              --data '{
+                "fields": {
+                  "description": "${TITLE} (RELEASE Version)"
+                }
+              }'
+        done
         
     #     - name: Checkout
     #       uses: actions/checkout@v3
