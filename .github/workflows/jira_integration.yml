@@ -91,7 +91,7 @@ jobs:
 
         ISSUE_KEYS=${{ steps.check_issue_key.outputs.ISSUE_KEYS }}
 
-        NEW_TITLE="${TITLE} (NEW_VERSION)"
+        NEW_TITLE="${TITLE} (${NEW_VERSION})"
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           # Altera a descricao da tarefa pelo JIRA API.
