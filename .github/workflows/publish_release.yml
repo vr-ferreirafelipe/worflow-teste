@@ -6,7 +6,7 @@ on:
 jobs:
   run_check_changes:
     name: Run Pre Release
-    uses: ./.github/workflows/pre-release.yml
+    uses: ./.github/workflows/check_changes.yml
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
