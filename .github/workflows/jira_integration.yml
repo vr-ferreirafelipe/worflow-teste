@@ -76,6 +76,11 @@ jobs:
 
     - name: Alter description
       run: |
+        # Recupere as variáveis de ambiente
+        JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
+        JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
+
         TITLE="${{ steps.fetch_jira_issue.outputs.TITLE }}"
         DOC_INFO="${{ steps.fetch_jira_issue.outputs.DOC_INFO }}"
 
@@ -85,7 +90,7 @@ jobs:
         for ISSUE_KEY in $ISSUE_KEYS; do
           # Altera a descricao da tarefa pelo JIRA API.
           curl -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-              -X PUT "$JIRA_BASE_URL/rest/api/2/issue/$JIRA_ISSUE_KEY" \
+              -X PUT "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY" \
               -H "Content-Type: application/json" \
               --data '{
                 "fields": {
