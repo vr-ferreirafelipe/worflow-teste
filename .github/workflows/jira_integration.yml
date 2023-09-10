@@ -1,4 +1,4 @@
-name: Integração com API JIRA 
+name: JIRA API - Integração
 
 on:
   workflow_call:
@@ -21,6 +21,9 @@ on:
       NEW_VERSION:
         required: true
         type: string
+      HAS_NEW_RELEASE:
+        required: true
+        type: boolean
 
 jobs:
   get_and_update_issue:
@@ -30,7 +33,7 @@ jobs:
     steps:
     - name: Get issue key from commit messages
       id: get_issue_key
-      if: inputs.NEW_VERSION
+      if: inputs.HAS_NEW_RELEASE
       run: |
         COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
 

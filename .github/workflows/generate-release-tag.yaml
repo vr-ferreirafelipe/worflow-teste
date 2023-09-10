@@ -1,4 +1,4 @@
-name: Prepara nova tag de versão pelos tipos de commit
+name: Define tag de versão
 
 on:
   workflow_call:
