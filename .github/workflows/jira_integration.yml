@@ -74,7 +74,7 @@ jobs:
         echo "$TITLE"
         echo "$DOC_INFO"
 
-    - name: Alter description
+    - name: Alter summary
       run: |
         # Recupere as variáveis de ambiente
         JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
@@ -95,7 +95,7 @@ jobs:
               -H "Content-Type: application/json" \
               --data '{
                 "fields": {
-                  "description": "'"$NEW_TITLE"'"
+                  "summary": "'"$NEW_TITLE"'"
                 }
               }'
         done
