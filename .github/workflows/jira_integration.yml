@@ -26,13 +26,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
     - name: Check Issue in commit message
       id: check_issue_key
       run: |
-        COMMIT_MESSAGES=${{ inputs.COMMIT_MESSAGES }}
+        COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
         ISSUE_KEY=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.JIRA_ISSUE_PREFIX }}-[0-9]\+')
 
         echo $ISSUE_KEY
