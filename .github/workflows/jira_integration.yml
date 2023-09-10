@@ -23,7 +23,7 @@ on:
         type: string
       HAS_NEW_RELEASE:
         required: true
-        type: boolean
+        type: string
 
 jobs:
   get_and_update_issue:
