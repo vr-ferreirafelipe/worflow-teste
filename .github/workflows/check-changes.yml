@@ -1,4 +1,4 @@
-name: Verifica alterações desde a ultima release
+name: Busca por novas alterações.
 
 on:
   workflow_call:
@@ -22,6 +22,7 @@ on:
 
 jobs:
   check-changes:
+    name: Busca por novos commits
     runs-on: ubuntu-latest
     outputs:
       
