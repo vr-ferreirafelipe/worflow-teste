@@ -26,17 +26,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.VRPACKAGETOKEN }}
-          fetch-depth: 0
-          ref: main
-      
       - name: Git Config
         run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
 
       - name: Clone Wiki 
         id: clone_wiki
         run: |
-          git clone https://${{ secrets.VRPACKAGETOKEN }}@github.com/vr-ferreirafelipe/${{ env.GITHUB_REPOSITORY }}.wiki.git
+          git clone https://${{ secrets.VR_PACKAGE_TOKEN }}@github.com/vr-ferreirafelipe/${{ env.GITHUB_REPOSITORY }}.wiki.git
