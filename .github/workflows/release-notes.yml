@@ -32,4 +32,7 @@ jobs:
       - name: Clone Wiki 
         id: clone_wiki
         run: |
-          git clone https://${{ inputs.VRPACKAGETOKEN }}@github.com/vr-ferreirafelipe/${{ env.GITHUB_REPOSITORY }}.wiki.git
+          echo $GITHUB_REPOSITORY
+
+          git clone https://@github.com/vr-ferreirafelipe/${{ env.GITHUB_REPOSITORY }}.wiki.git
+          git clone https://${{ secrets.VRPACKAGETOKEN }}@github.com/vr-ferreirafelipe/${{ GITHUB_REPOSITORY }}.wiki.git
