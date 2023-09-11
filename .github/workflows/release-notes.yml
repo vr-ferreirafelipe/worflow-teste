@@ -35,4 +35,4 @@ jobs:
       - name: Clone Wiki 
         id: clone_wiki
         run: |
-          git clone https://github.com/vr-ferreirafelipe/$PROJECT_NAME.wiki.git
+          git clone https://$VRPACKAGETOKEN@github.com/vr-ferreirafelipe/$PROJECT_NAME.wiki.git
