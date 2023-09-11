@@ -30,6 +30,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.VRPACKAGETOKEN }}
+          fetch-depth: 0
+          ref: main
       
       - name: Git Config
         run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
