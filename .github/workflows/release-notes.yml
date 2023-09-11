@@ -130,5 +130,7 @@ jobs:
 
       - name: Commit release note
         run: |
+          GITHUB_REPOSITORY_NAME="${{ steps.generate_release_notes.outputs.GITHUB_REPOSITORY_NAME }}.wiki"
+          cd $GITHUB_REPOSITORY_NAME
           git commit -m "doc: Adiciona nota de versa v$NEW_VERSION"
           git push
