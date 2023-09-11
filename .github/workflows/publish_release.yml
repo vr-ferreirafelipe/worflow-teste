@@ -100,3 +100,4 @@ jobs:
       BUG_FIX_INFO: ''
       FEAT_INFO: ''
       BREAK_CHANGE_INFO: ''
+      JIRA_ISSUE_KEYS: 'MOB-1094 MOB-0000 MOB-0001'

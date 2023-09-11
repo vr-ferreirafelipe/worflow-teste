@@ -21,6 +21,9 @@ on:
       BREAK_CHANGE_INFO:
         required: true
         type: string
+      JIRA_ISSUE_KEYS:
+        required: true
+        type: string
 
 
 jobs:
@@ -31,6 +34,67 @@ jobs:
     steps:
       - name: Git Config
         run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
+
+      - name: Generate Release Notes
+        run: |
+          releaseNoteFile="release_note.md"
+          DATA=$(date +'(%A) %d/%m/%Y')
+
+          if [ -n "$BREAK_CHANGE_INFO" ]; then
+            echo "# :warning: v$NEW_VERSION - $DATA" > "releaseNoteFile"
+          else
+            echo "# v$NEW_VERSION - $DATA" > "releaseNoteFile"
+          fi
+
+          for JIRA_ISSUE_KEY in $JIRA_ISSUE_KEYS; done
+            echo "[![Static Badge](https://img.shields.io/badge/$JIRA_ISSUE_KEY-37474F?style=flat&logo=jira&labelColor=%23263238)](https://vrsoft.atlassian.net/browse/$JIRA_ISSUE_KEY)" >> "releaseNoteFile"
+          done
+
+          if [ -n "$BREAK_CHANGE_INFO" ]; then
+            echo "_Esta versão contém mudanças significativas de versão, `Break Changes`, que podem causar incompatibilidade com versões anteriores ou afetar o funcionamento de sistemas existentes. É importante revisar essas alterações antes de atualizar para a nova versão._" >> "releaseNoteFile"
+            echo "" >> "releaseNoteFile"
+            echo "### :warning: `Breaak Changes`:" >> "releaseNoteFile"
+            echo "$BREAK_CHANGE_INFO"  >> "releaseNoteFile"
+          else
+
+          if [ -n "$BUG_FIX_INFO" ]; then
+            echo "" >> "releaseNoteFile"
+            echo "### Correções:" >> "releaseNoteFile"
+            echo "$BUG_FIX_INFO"  >> "releaseNoteFile"
+          else
+
+          if [ -n "$BUG_FIX_INFO" ]; then
+            echo "" >> "releaseNoteFile"
+            echo "### Novos Recursos:" >> "releaseNoteFile"
+            echo "$FEAT_INFO"  >> "releaseNoteFile"
+          else
+
+          echo "<details>"  >> "releaseNoteFile"
+          echo "<summary><a href="https://wiki.vrsoft.com.br/wiki/index.php/Pagina_principal"> Code Wiki </a></summary>"  >> "releaseNoteFile"
+          echo "```"  >> "releaseNoteFile"
+          echo "===<b>$GITHUB_REPOSITORY $NEW_VERSION</b>==="  >> "releaseNoteFile"
+
+          if [ -n "$BREAK_CHANGE_INFO" ]; then
+            echo "<em> Esta versão contém mudanças significativas de versão, `Break Changes`, que podem causar incompatibilidade com versões anteriores ou afetar o funcionamento de sistemas existentes. É importante revisar essas alterações antes de atualizar para a nova versão. </em>" >> "releaseNoteFile
+            echo "" >> "releaseNoteFile"
+            echo " <font size=4><b>Breaak Changes:</b></font>" >> "releaseNoteFile"
+            echo "$BREAK_CHANGE_INFO"  >> "releaseNoteFile"
+          else
+
+          if [ -n "$BUG_FIX_INFO" ]; then
+            echo " <font size=4><b>Correções:</b></font>" >> "releaseNoteFile"
+            echo "$BUG_FIX_INFO"  >> "releaseNoteFile"
+          else
+
+          if [ -n "$FEAT_INFO" ]; then
+            echo " <font size=4><b>Correções:</b></font>" >> "releaseNoteFile"
+            echo "$FEAT_INFO"  >> "releaseNoteFile"
+          else
+
+          echo "```"  >> "releaseNoteFile"
+          echo "</details>"  >> "releaseNoteFile"
+
+          echo "---" >> "releaseNoteFile"
 
       - name: Clone Wiki 
         id: clone_wiki
