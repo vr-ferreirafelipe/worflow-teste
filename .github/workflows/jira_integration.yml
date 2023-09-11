@@ -118,8 +118,13 @@ jobs:
 
           # Desestrutura o objeto de resposta
           ISSUE_BREAK_CHANGE_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10115')
+          ISSUE_BREAK_CHANGE_INFO=${ISSUE_BREAK_CHANGE_INFO:-''}
+
           ISSUE_BUG_FIX_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10113')
+          ISSUE_BUG_FIX_INFO=${ISSUE_BUG_FIX_INFO:-''}
+
           ISSUE_FEAT_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10114')
+          ISSUE_FEAT_INFO=${ISSUE_FEAT_INFO:-''}
 
 
           # Verifique se a saída do jq não está vazia
