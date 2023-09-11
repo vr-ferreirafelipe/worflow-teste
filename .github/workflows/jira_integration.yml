@@ -28,7 +28,15 @@ on:
       ISSUE_KEYS:
         description: "Armazena os ids das tarefas encontrados nos commits."
         value: ${{ jobs.get_and_update_issue.outputs.ISSUE_KEYS }}
-
+      BUG_FIX_INFO:
+        description: "Armazena os dados de correções documentado no jira."
+        value: ${{ jobs.get_and_update_issue.outputs.BUG_FIX_INFO }}
+      FEAT_INFO:
+        description: "Armazena os dados de novos recursos documentado no jira."
+        value: ${{ jobs.get_and_update_issue.outputs.FEAT_INFO }}
+      BREAK_CHANGE_INFO:
+        description: "Armazena os dados de break change documentado no jira."
+        value: ${{ jobs.get_and_update_issue.outputs.BREAK_CHANGE_INFO }}
 
 jobs:
   get_and_update_issue:
@@ -36,6 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ISSUE_KEYS: ${{ steps.find_issue_key.outputs.ISSUE_KEYS }}
+      BUG_FIX_INFO: ${{ steps.find_issue_key.outputs.BUG_FIX_INFO }}
+      FEAT_INFO: ${{ steps.find_issue_key.outputs.FEAT_INFO }}
+      BREAK_CHANGE_INFO: ${{ steps.find_issue_key.outputs.BREAK_CHANGE_INFO }}
 
     steps:
     - name: Find issue key from commit messages
@@ -58,18 +69,18 @@ jobs:
         fi
 
 
-    - name: Update Issues from JIRA
-      run: |
-        # Recupere as variáveis de ambiente
-        JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
-        JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
+    # - name: Update Issues from JIRA
+    #   run: |
+    #     # Recupere as variáveis de ambiente
+    #     JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
+    #     JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
+    #     JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
 
-        ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
-        ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-          -X GET "$JIRA_BASE_URL/rest/api/2/issue/MOB-1094")
+    #     ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
+    #     ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+    #       -X GET "$JIRA_BASE_URL/rest/api/2/issue/MOB-1094")
 
-        echo $ISSUE_JSON
+    #     echo $ISSUE_JSON
 
 
     - name: Update Issues from JIRA
@@ -84,10 +95,19 @@ jobs:
         # Recuperar os inputs
         NEW_VERSION=${{ inputs.NEW_VERSION }}
 
+        # customfield_10112 = Release Tag
+        # customfield_10115 = [DOC] - Break Change
+        # customfield_10113 = [DOC] - Correções realizadas
+        # customfield_10114 = [DOC] - Recursos adicionados
+
         # Definir os compos jira
-        JIRA_FIELDS="summary,customfield_10037"
+        JIRA_FIELDS="customfield_10112,customfield_10115,customfield_10113,customfield_10114"
 
         ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
+
+        BREAK_CHANGE_INFO=""
+        BUG_FIX_INFO=""
+        FEAT_INFO=""
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           echo $ISSUE_KEY
@@ -97,8 +117,10 @@ jobs:
             -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
 
           # Desestrutura o objeto de resposta
-          TITLE=$(echo $ISSUE_JSON | jq -r '.fields.summary')
-          DOC_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10037')
+          RELEASE_TAG="${RELEASE_TAG} \n $(echo $ISSUE_JSON | jq -r '.fields.customfield_10112')"
+          BREAK_CHANGE_INFO="${BREAK_CHANGE_INFO} \n $(echo $ISSUE_JSON | jq -r '.fields.customfield_10115')"
+          BUG_FIX_INFO="${BUG_FIX_INFO} \n $(echo $ISSUE_JSON | jq -r '.fields.customfield_10113')"
+          FEAT_INFO="${FEAT_INFO} \n $(echo $ISSUE_JSON | jq -r '.fields.customfield_10114')"
 
           # Altera o titlul da tarefa concatenando a release.
           curl -u $JIRA_USERNAME:$JIRA_API_TOKEN \
@@ -106,18 +128,12 @@ jobs:
               -H "Content-Type: application/json" \
               --data '{
                 "fields": {
-                  "summary": "'"${TITLE} (${NEW_VERSION})"'"
+                  "customfield_10112": "${NEW_VERSION})"
                 }
               }'
-
-          echo "::set-output name=TITLE::$(echo $ISSUE_JSON | jq -r '.fields.summary')"
-          echo "::set-output name=DOC_INFO::$(echo $ISSUE_JSON | jq -r '.fields.customfield_10037')"
         done
 
-    - name: ECHO Jira Issue
-      run: |
-        TITLE="${{ steps.update_issues.outputs.TITLE }}"
-        DOC_INFO="${{ steps.update_issues.outputs.DOC_INFO }}"
-
-        echo "$TITLE"
-        echo "$DOC_INFO"
+        echo "::set-output name=BREAK_CHANGE_INFO::$BREAK_CHANGE_INFO"
+        echo "::set-output name=BUG_FIX_INFO::$BUG_FIX_INFO"
+        echo "::set-output name=FEAT_INFO::$FEAT_INFO"
+      shell: bash
