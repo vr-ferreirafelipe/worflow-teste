@@ -57,19 +57,19 @@ jobs:
             echo "" >> "releaseNoteFile"
             echo "### :warning: `Breaak Changes`:" >> "releaseNoteFile"
             echo "$BREAK_CHANGE_INFO"  >> "releaseNoteFile"
-          else
+          fi
 
           if [ -n "$BUG_FIX_INFO" ]; then
             echo "" >> "releaseNoteFile"
             echo "### Correções:" >> "releaseNoteFile"
             echo "$BUG_FIX_INFO"  >> "releaseNoteFile"
-          else
+          fi
 
           if [ -n "$BUG_FIX_INFO" ]; then
             echo "" >> "releaseNoteFile"
             echo "### Novos Recursos:" >> "releaseNoteFile"
             echo "$FEAT_INFO"  >> "releaseNoteFile"
-          else
+          fi
 
           echo "<details>"  >> "releaseNoteFile"
           echo "<summary><a href="https://wiki.vrsoft.com.br/wiki/index.php/Pagina_principal"> Code Wiki </a></summary>"  >> "releaseNoteFile"
@@ -79,12 +79,12 @@ jobs:
           if [ -n "$BUG_FIX_INFO" ]; then
             echo " <font size=4><b>Correções:</b></font>" >> "releaseNoteFile"
             echo "$BUG_FIX_INFO"  >> "releaseNoteFile"
-          else
+          fi
 
           if [ -n "$FEAT_INFO" ]; then
             echo " <font size=4><b>Correções:</b></font>" >> "releaseNoteFile"
             echo "$FEAT_INFO"  >> "releaseNoteFile"
-          else
+          fi
 
           echo "```"  >> "releaseNoteFile"
           echo "</details>"  >> "releaseNoteFile"
