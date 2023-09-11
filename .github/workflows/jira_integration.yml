@@ -105,9 +105,9 @@ jobs:
 
         ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
 
-        # BREAK_CHANGE_INFO=""
-        # BUG_FIX_INFO=""
-        # FEAT_INFO=""
+        BREAK_CHANGE_INFO=""
+        BUG_FIX_INFO=""
+        FEAT_INFO=""
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           echo $ISSUE_KEY
