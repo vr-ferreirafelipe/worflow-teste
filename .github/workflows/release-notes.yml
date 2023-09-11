@@ -35,7 +35,7 @@ jobs:
       - name: Git Config
         run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
 
-      - name: Generate Release Notes
+      - name: Generate release notes markdown
         run: |
           # recupera os inputs
           NEW_VERSION=${{ inputs.NEW_VERSION }}
@@ -113,7 +113,11 @@ jobs:
           
           cat release_note.md
 
-      - name: Clone Wiki 
-        id: clone_wiki
+      - name: Clone wiki repository  
+        id: clone_wiki_repo
         run: |
           git clone https://${{ secrets.VR_PACKAGE_TOKEN }}@github.com/${{ inputs.GITHUB_REPOSITORY }}.wiki.git
+
+      - name: Update release note from wiki
+        run: |
+          ls
