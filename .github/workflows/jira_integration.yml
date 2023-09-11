@@ -105,9 +105,9 @@ jobs:
 
         ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
 
-        BREAK_CHANGE_INFO=""
-        BUG_FIX_INFO=""
-        FEAT_INFO=""
+        # BREAK_CHANGE_INFO=""
+        # BUG_FIX_INFO=""
+        # FEAT_INFO=""
 
         for ISSUE_KEY in $ISSUE_KEYS; do
           echo $ISSUE_KEY
@@ -117,9 +117,30 @@ jobs:
             -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
 
           # Desestrutura o objeto de resposta
-          BREAK_CHANGE_INFO="${BREAK_CHANGE_INFO} $(echo $ISSUE_JSON | jq -r '.fields.customfield_10115') \n"
-          BUG_FIX_INFO="${BUG_FIX_INFO} $(echo $ISSUE_JSON | jq -r '.fields.customfield_10113') \n"
-          FEAT_INFO="${FEAT_INFO} $(echo $ISSUE_JSON | jq -r '.fields.customfield_10114') \n"
+          ISSUE_BREAK_CHANGE_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10115')
+          ISSUE_BUG_FIX_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10113')
+          ISSUE_FEAT_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10114')
+
+
+          # Verifique se a saída do jq não está vazia
+          if [ -n "$ISSUE_BREAK_CHANGE_INFO" ]; then
+            # Formata quebras de linha
+            ISSUE_BREAK_CHANGE_INFO=$(echo "$ISSUE_BREAK_CHANGE_INFO" | tr '\n' '\\n')\n"
+            BREAK_CHANGE_INFO="${BREAK_CHANGE_INFO} ISSUE_BREAK_CHANGE_INFO"
+          fi
+
+          if [ -n "$ISSUE_BUG_FIX_INFO" ]; then
+            # Formata quebras de linha
+            ISSUE_BUG_FIX_INFO=$(echo "$ISSUE_BUG_FIX_INFO" | tr '\n' '\\n')\n"
+            BUG_FIX_INFO="${BUG_FIX_INFO} ISSUE_BUG_FIX_INFO"
+          fi
+
+          if [ -n "$ISSUE_FEAT_INFO" ]; then
+            # Formata quebras de linha
+            ISSUE_FEAT_INFO=$(echo "$ISSUE_FEAT_INFO" | tr '\n' '\\n')\n"
+            FEAT_INFO="${FEAT_INFO} ISSUE_FEAT_INFO"
+          fi
+
 
           # Altera o titlul da tarefa concatenando a release.
           curl -u $JIRA_USERNAME:$JIRA_API_TOKEN \
