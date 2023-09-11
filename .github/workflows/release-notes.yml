@@ -95,7 +95,9 @@ jobs:
           echo "</details>"  >> "releaseNoteFile"
 
           echo "---" >> "releaseNoteFile"
-
+          
+          cat release_note.md
+          
       - name: Clone Wiki 
         id: clone_wiki
         run: |
