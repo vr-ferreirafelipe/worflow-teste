@@ -67,21 +67,23 @@ jobs:
             echo "_Esta versão contém mudanças significativas de versão', \`Break Changes\`, que podem causar incompatibilidade com versões anteriores ou afetar o funcionamento de sistemas existentes. É importante revisar essas alterações antes de atualizar para a nova versão._" >> "$releaseNoteFile"
             echo "" >> "$releaseNoteFile"
             echo "### :warning: \`Break Changes\`:" >> "$releaseNoteFile"
-            echo $(echo "$BREAK_CHANGE_INFO" | sed 's/|/\n/g')  >> "$releaseNoteFile"
+
+            BREAK_CHANGE_INFO=$(echo "$BREAK_CHANGE_INFO" | sed 's/|/\n/g')
+            echo "$BREAK_CHANGE_INFO"  >> "$releaseNoteFile"
           fi
 
           if [ -n "$BUG_FIX_INFO" ]; then
-            echo "" >> "$releaseNoteFile"
             echo "### Correções:" >> "$releaseNoteFile"
+
             BUG_FIX_INFO=$(echo "$BUG_FIX_INFO" | sed 's/|/\n/g')
-            echo "$BUG_FIX_INFO"
             echo "$BUG_FIX_INFO"  >> "$releaseNoteFile"
           fi
 
           if [ -n "$BUG_FIX_INFO" ]; then
-            echo "" >> "$releaseNoteFile"
             echo "### Novos Recursos:" >> "$releaseNoteFile"
-            echo $(echo "$FEAT_INFO" | sed 's/|/\n/g')  >> "$releaseNoteFile"
+
+            FEAT_INFO=$(echo "$FEAT_INFO" | sed 's/|/\n/g')
+            echo "$FEAT_INFO"  >> "$releaseNoteFile"
           fi
 
           echo "" >> "$releaseNoteFile"
@@ -92,12 +94,12 @@ jobs:
 
           if [ -n "$BUG_FIX_INFO" ]; then
             echo " <font size=4><b>Correções:</b></font>" >> "$releaseNoteFile"
-            echo $(echo "$BUG_FIX_INFO" | sed 's/|/<br>/g')  >> "$releaseNoteFile"
+            echo "$BUG_FIX_INFO" >> "$releaseNoteFile"
           fi
 
           if [ -n "$FEAT_INFO" ]; then
             echo " <font size=4><b>Novos Recursos:</b></font>" >> "$releaseNoteFile"
-            echo $(echo "$FEAT_INFO" | sed 's/|/<br>/g')  >> "$releaseNoteFile"
+            echo "$FEAT_INFO" >> "$releaseNoteFile"
           fi
 
           echo "\`\`\`"  >> "$releaseNoteFile"
