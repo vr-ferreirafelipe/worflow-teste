@@ -89,7 +89,7 @@ jobs:
     needs: 
       - run_check_changes
       - run_generate_release_tag
-      - publish_release
+      # - publish_release
       # - run_jira_integration
     if: needs.run_check_changes.outputs.HAS_CHANGES && needs.run_generate_release_tag.outputs.HAS_NEW_RELEASE
     secrets:
