@@ -97,7 +97,7 @@ jobs:
     with:
       GITHUB_REPOSITORY: $GITHUB_REPOSITORY
       NEW_VERSION: ${{ needs.run_generate_release_tag.outputs.NEW_VERSION }} 
-      BUG_FIX_INFO: '- bug 1'
-      FEAT_INFO: '- feat 1'
-      BREAK_CHANGE_INFO: '- xiiiii 1'
-      JIRA_ISSUE_KEYS: 'MOB-1094 MOB-0000 MOB-0001'
+      BUG_FIX_INFO: ${{ needs.run_jira_integration.outputs.BUG_FIX_INFO }} 
+      FEAT_INFO: ${{ needs.run_jira_integration.outputs.FEAT_INFO }} 
+      BREAK_CHANGE_INFO: ${{ needs.run_jira_integration.outputs.BREAK_CHANGE_INFO }} 
+      JIRA_ISSUE_KEYS: ${{ needs.run_jira_integration.outputs.JIRA_ISSUE_KEYS }} 
