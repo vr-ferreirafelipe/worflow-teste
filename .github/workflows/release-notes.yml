@@ -74,8 +74,8 @@ jobs:
             echo "" >> "$releaseNoteFile"
             echo "### Correções:" >> "$releaseNoteFile"
             BUG_FIX_INFO=$(echo "$BUG_FIX_INFO" | sed 's/|/\n/g')
-            echo $BUG_FIX_INFO
-            echo $BUG_FIX_INFO  >> "$releaseNoteFile"
+            echo "$BUG_FIX_INFO"
+            echo "$BUG_FIX_INFO"  >> "$releaseNoteFile"
           fi
 
           if [ -n "$BUG_FIX_INFO" ]; then
