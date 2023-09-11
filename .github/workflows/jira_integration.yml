@@ -133,9 +133,9 @@ jobs:
               }'
         done
 
-        echo BREAK_CHANGE_INFO
-        echo BUG_FIX_INFO
-        echo FEAT_INFO
+        echo $BREAK_CHANGE_INFO
+        echo $BUG_FIX_INFO
+        echo $FEAT_INFO
 
         echo "::set-output name=BREAK_CHANGE_INFO::$BREAK_CHANGE_INFO"
         echo "::set-output name=BUG_FIX_INFO::$BUG_FIX_INFO"
