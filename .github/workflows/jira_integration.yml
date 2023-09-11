@@ -125,20 +125,20 @@ jobs:
           # Verifique se a saída do jq não está vazia
           if [ -n "$ISSUE_BREAK_CHANGE_INFO" ]; then
             # Formata quebras de linha
-            ISSUE_BREAK_CHANGE_INFO=$(echo "$ISSUE_BREAK_CHANGE_INFO" | tr '\n' '|')|
-            BREAK_CHANGE_INFO="${BREAK_CHANGE_INFO} $ISSUE_BREAK_CHANGE_INFO"
+            ISSUE_BREAK_CHANGE_INFO=$(echo "$ISSUE_BREAK_CHANGE_INFO" | tr '\n' '|')
+            BREAK_CHANGE_INFO="${BREAK_CHANGE_INFO} | $ISSUE_BREAK_CHANGE_INFO"
           fi
 
           if [ -n "$ISSUE_BUG_FIX_INFO" ]; then
             # Formata quebras de linha
-            ISSUE_BUG_FIX_INFO=$(echo "$ISSUE_BUG_FIX_INFO" | tr '\n' '|')|
-            BUG_FIX_INFO="${BUG_FIX_INFO} $ISSUE_BUG_FIX_INFO"
+            ISSUE_BUG_FIX_INFO=$(echo "$ISSUE_BUG_FIX_INFO" | tr '\n' '|')
+            BUG_FIX_INFO="${BUG_FIX_INFO} | $ISSUE_BUG_FIX_INFO"
           fi
 
           if [ -n "$ISSUE_FEAT_INFO" ]; then
             # Formata quebras de linha
-            ISSUE_FEAT_INFO=$(echo "$ISSUE_FEAT_INFO" | tr '\n' '|')|
-            FEAT_INFO="${FEAT_INFO} $ISSUE_FEAT_INFO"
+            ISSUE_FEAT_INFO=$(echo "$ISSUE_FEAT_INFO" | tr '\n' '|')
+            FEAT_INFO="${FEAT_INFO} | $ISSUE_FEAT_INFO"
           fi
 
 
