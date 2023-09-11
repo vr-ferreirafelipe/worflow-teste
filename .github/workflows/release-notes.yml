@@ -88,7 +88,7 @@ jobs:
 
           echo "" >> "$releaseNoteFile"
           echo "<details>"  >> "$releaseNoteFile"
-          echo "<summary><a href="https://wiki.vrsoft.com.br/wiki/index.php/Pagina_principal"> Wiki VR </a></summary>"  >> "$releaseNoteFile"
+          echo "<summary><a href="https://wiki.vrsoft.com.br/wiki/index.php/Pagina_principal"> Code Wiki VR </a></summary>"  >> "$releaseNoteFile"
           echo "" >> "$releaseNoteFile"
           echo "\`\`\`"  >> "$releaseNoteFile"
           echo "===<b>$GITHUB_REPOSITORY $NEW_VERSION</b>==="  >> "$releaseNoteFile"
