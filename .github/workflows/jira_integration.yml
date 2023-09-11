@@ -117,7 +117,7 @@ jobs:
             -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
 
           # Desestrutura o objeto de resposta
-          RELEASE_TAG="${RELEASE_TAG} \n $(echo $ISSUE_JSON | jq -r '.fields.customfield_10112')"
+          # RELEASE_TAG="${RELEASE_TAG} \n $(echo $ISSUE_JSON | jq -r '.fields.customfield_10112')"
           BREAK_CHANGE_INFO="${BREAK_CHANGE_INFO} \n $(echo $ISSUE_JSON | jq -r '.fields.customfield_10115')"
           BUG_FIX_INFO="${BUG_FIX_INFO} \n $(echo $ISSUE_JSON | jq -r '.fields.customfield_10113')"
           FEAT_INFO="${FEAT_INFO} \n $(echo $ISSUE_JSON | jq -r '.fields.customfield_10114')"
