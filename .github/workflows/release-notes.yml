@@ -1,0 +1,38 @@
+name: Atualiza Wiki.
+
+on:
+  workflow_call:
+    secrets:
+      VR_PACKAGE_TOKEN:
+        required: true
+    inputs:
+      PROJECT_NAME:
+        required: true
+        type: string
+      NEW_VERSION:
+        required: true
+        type: string
+      BUG_FIX_INFO:
+        required: true
+        type: string
+      FEAT_INFO:
+        required: true
+        type: string
+      BREAK_CHANGE_INFO:
+        required: true
+        type: string
+
+
+jobs:
+  update-wiki:
+    name: Gerar nota de versão
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git Config
+        run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
+
+      - name: Clone Wiki 
+        id: clone_wiki
+        run: |
+          git clone https://github.com/vr-ferreirafelipe/$PROJECT_NAME.wiki.git
