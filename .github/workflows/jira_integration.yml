@@ -44,9 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ISSUE_KEYS: ${{ steps.find_issue_key.outputs.ISSUE_KEYS }}
-      BUG_FIX_INFO: ${{ steps.find_issue_key.outputs.BUG_FIX_INFO }}
-      FEAT_INFO: ${{ steps.find_issue_key.outputs.FEAT_INFO }}
-      BREAK_CHANGE_INFO: ${{ steps.find_issue_key.outputs.BREAK_CHANGE_INFO }}
+      BUG_FIX_INFO: ${{ steps.update_issues.outputs.BUG_FIX_INFO }}
+      FEAT_INFO: ${{ steps.update_issues.outputs.FEAT_INFO }}
+      BREAK_CHANGE_INFO: ${{ steps.update_issues.outputs.BREAK_CHANGE_INFO }}
 
     steps:
     - name: Find issue key from commit messages
