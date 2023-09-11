@@ -41,11 +41,11 @@ jobs:
           NEW_VERSION=${{ inputs.NEW_VERSION }}
           GITHUB_REPOSITORY=${{ inputs.GITHUB_REPOSITORY }}
           
-          BUG_FIX_INFO=${{ inputs.BUG_FIX_INFO }}
-          FEAT_INFO=${{ inputs.FEAT_INFO }}
-          BREAK_CHANGE_INFO=${{ inputs.BREAK_CHANGE_INFO }}
+          BUG_FIX_INFO="${{ inputs.BUG_FIX_INFO }}"
+          FEAT_INFO="${{ inputs.FEAT_INFO }}"
+          BREAK_CHANGE_INFO="${{ inputs.BREAK_CHANGE_INFO }}"
 
-          JIRA_ISSUE_KEYS=${{ inputs.JIRA_ISSUE_KEYS }}
+          JIRA_ISSUE_KEYS="${{ inputs.JIRA_ISSUE_KEYS }}"
 
           releaseNoteFile="release_note.md"
           DATA=$(date +'(%A) %d/%m/%Y')
