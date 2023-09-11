@@ -120,7 +120,8 @@ jobs:
 
       - name: Update release note from wiki
         run: |
-          cat release_note.md wiki.md > Notas-de-versão.md
+          cat release_note.md $GITHUB_REPOSITORY_NAME/Notas-de-versão.md > temp.md 
+          mv temp.md $GITHUB_REPOSITORY_NAME/Notas-de-versão.md 
 
       - name: Commit release note
         run: |
