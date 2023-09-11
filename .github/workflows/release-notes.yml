@@ -90,6 +90,7 @@ jobs:
           echo "<details>"  >> "$releaseNoteFile"
           echo "<summary><a href="https://wiki.vrsoft.com.br/wiki/index.php/Pagina_principal"> Code Wiki </a></summary>"  >> "$releaseNoteFile"
           echo "\`\`\`"  >> "$releaseNoteFile"
+          echo "" >> "$releaseNoteFile"
           echo "===<b>$GITHUB_REPOSITORY $NEW_VERSION</b>==="  >> "$releaseNoteFile"
 
           if [ -n "$BUG_FIX_INFO" ]; then
