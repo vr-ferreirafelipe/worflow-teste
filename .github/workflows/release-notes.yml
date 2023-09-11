@@ -48,7 +48,7 @@ jobs:
           JIRA_ISSUE_KEYS="${{ inputs.JIRA_ISSUE_KEYS }}"
 
           releaseNoteFile="release_note.md"
-          DATA=$(date +'(%A) %d/%m/%Y')
+          DATA=$(date +'%d/%m/%Y')
 
           if [ -n "$BREAK_CHANGE_INFO" ]; then
             echo "# :warning: v$NEW_VERSION - $DATA" > "$releaseNoteFile"
@@ -58,12 +58,13 @@ jobs:
 
           if [ -n "$JIRA_ISSUE_KEYS" ]; then
             for JIRA_ISSUE_KEY in $JIRA_ISSUE_KEYS; do
-             echo "[![Static Badge](https://img.shields.io/badge/$JIRA_ISSUE_KEY-37474F?style=flat&logo=jira&labelColor=%23263238)](https://vrsoft.atlassian.net/browse/$JIRA_ISSUE_KEY)" >> "$releaseNoteFile"
+              echo "[![Static Badge](https://img.shields.io/badge/$JIRA_ISSUE_KEY-37474F?style=flat&logo=jira&labelColor=%23263238)](https://vrsoft.atlassian.net/browse/$JIRA_ISSUE_KEY)" >> "$releaseNoteFile"
+              echo "" >> "$releaseNoteFile"
             done
           fi
 
           if [ -n "$BREAK_CHANGE_INFO" ]; then
-            echo "_Esta versão contém mudanças significativas de versão, `Break Changes`, que podem causar incompatibilidade com versões anteriores ou afetar o funcionamento de sistemas existentes. É importante revisar essas alterações antes de atualizar para a nova versão._" >> "$releaseNoteFile"
+            echo "_Esta versão contém mudanças significativas de versão', '`Break Changes`', que podem causar incompatibilidade com versões anteriores ou afetar o funcionamento de sistemas existentes. É importante revisar essas alterações antes de atualizar para a nova versão._" >> "$releaseNoteFile"
             echo "" >> "$releaseNoteFile"
             echo "### :warning: `Breaak Changes`:" >> "$releaseNoteFile"
             echo "$BREAK_CHANGE_INFO"  >> "$releaseNoteFile"
@@ -81,6 +82,7 @@ jobs:
             echo "$FEAT_INFO"  >> "$releaseNoteFile"
           fi
 
+          echo "" >> "$releaseNoteFile"
           echo "<details>"  >> "$releaseNoteFile"
           echo "<summary><a href="https://wiki.vrsoft.com.br/wiki/index.php/Pagina_principal"> Code Wiki </a></summary>"  >> "$releaseNoteFile"
           echo "```"  >> "$releaseNoteFile"
