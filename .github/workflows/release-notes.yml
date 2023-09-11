@@ -6,6 +6,9 @@ on:
       VR_PACKAGE_TOKEN:
         required: true
     inputs:
+      GITHUB_REPOSITORY:
+        required: true
+        type: string
       NEW_VERSION:
         required: true
         type: string
@@ -32,4 +35,4 @@ jobs:
       - name: Clone Wiki 
         id: clone_wiki
         run: |
-          git clone https://${{ secrets.VR_PACKAGE_TOKEN }}@github.com/vr-ferreirafelipe/${{ env.GITHUB_REPOSITORY }}.wiki.git
+          git clone https://${{ secrets.VR_PACKAGE_TOKEN }}@github.com/vr-ferreirafelipe/${{ inputs.GITHUB_REPOSITORY }}.wiki.git
