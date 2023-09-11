@@ -69,7 +69,7 @@ jobs:
         ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
           -X GET "$JIRA_BASE_URL/rest/api/2/issue/MOB-1094")
 
-        echo ISSUE_JSON
+        echo $ISSUE_JSON
 
 
     - name: Update Issues from JIRA
