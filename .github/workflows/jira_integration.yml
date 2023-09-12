@@ -69,18 +69,18 @@ jobs:
         fi
 
 
-    # - name: Update Issues from JIRA
-    #   run: |
-    #     # Recupere as variáveis de ambiente
-    #     JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
-    #     JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
-    #     JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
+    - name: Update Issues from JIRA
+      run: |
+        # Recupere as variáveis de ambiente
+        JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
+        JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
 
-    #     ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
-    #     ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-    #       -X GET "$JIRA_BASE_URL/rest/api/2/issue/MOB-1094")
+        ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
+        ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+          -X GET "$JIRA_BASE_URL/rest/api/2/issue/MOB-1094")
 
-    #     echo $ISSUE_JSON
+        echo $ISSUE_JSON
 
 
     - name: Update Issues from JIRA
@@ -165,3 +165,5 @@ jobs:
         echo "::set-output name=BUG_FIX_INFO::$BUG_FIX_INFO"
         echo "::set-output name=FEAT_INFO::$FEAT_INFO"
       shell: bash
+
+      

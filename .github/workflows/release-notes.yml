@@ -69,7 +69,7 @@ jobs:
           fi
 
           if [ -n "$BREAK_CHANGE_INFO" ]; then
-            echo "_Esta versão contém mudanças significativas de versão', \`Break Changes\`, que podem causar incompatibilidade com versões anteriores ou afetar o funcionamento de sistemas existentes. É importante revisar essas alterações antes de atualizar para a nova versão._" >> "$releaseNoteFile"
+            echo "_Esta versão contém mudanças significativas de versão, \`Break Changes\`, que podem causar incompatibilidade com versões anteriores ou afetar o funcionamento de sistemas existentes. É importante revisar essas alterações antes de atualizar para a nova versão._" >> "$releaseNoteFile"
             echo "" >> "$releaseNoteFile"
             echo "### :warning: \`Break Changes\`:" >> "$releaseNoteFile"
 
