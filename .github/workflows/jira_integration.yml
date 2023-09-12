@@ -37,6 +37,9 @@ on:
       BREAK_CHANGE_INFO:
         description: "Armazena os dados de break change documentado no jira."
         value: ${{ jobs.get_and_update_issue.outputs.BREAK_CHANGE_INFO }}
+      TEC_NOTE_INFO:
+        description: "Armazena os dados de break change documentado no jira."
+        value: ${{ jobs.get_and_update_issue.outputs.TEC_NOTE_INFO }}
 
 jobs:
   get_and_update_issue:
@@ -47,6 +50,7 @@ jobs:
       BUG_FIX_INFO: ${{ steps.update_issues.outputs.BUG_FIX_INFO }}
       FEAT_INFO: ${{ steps.update_issues.outputs.FEAT_INFO }}
       BREAK_CHANGE_INFO: ${{ steps.update_issues.outputs.BREAK_CHANGE_INFO }}
+      TEC_NOTE_INFO:  ${{ steps.update_issues.outputs.TEC_NOTE_INFO }}
 
     steps:
     - name: Find issue key from commit messages
@@ -95,13 +99,14 @@ jobs:
         # Recuperar os inputs
         NEW_VERSION=${{ inputs.NEW_VERSION }}
 
-        # customfield_10112 = Release Tag
-        # customfield_10115 = [DOC] - Break Change
         # customfield_10113 = [DOC] - Correções realizadas
+        # customfield_10115 = [DOC] - Break Change
         # customfield_10114 = [DOC] - Recursos adicionados
+        # customfield_10116 = Release Tag
+        # customfield_10117 = [DOC] - Notas Técnicas
 
         # Definir os compos jira
-        JIRA_FIELDS="customfield_10112,customfield_10115,customfield_10113,customfield_10114"
+        JIRA_FIELDS="customfield_10113,customfield_10114,customfield_10115,customfield_10116,customfield_10117"
 
         ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
 
@@ -126,6 +131,9 @@ jobs:
           ISSUE_FEAT_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10114')
           ISSUE_FEAT_INFO=$(echo "$ISSUE_FEAT_INFO" | sed 's/^null$/''/')
 
+          ISSUE_TEC_NOTE_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10117')
+          ISSUE_TEC_NOTE_INFO=$(echo "$ISSUE_TEC_NOTE_INFO" | sed 's/^null$/''/')
+
           # Verifique se a saída do jq não está vazia
           if [ -n "$ISSUE_BREAK_CHANGE_INFO" ]; then
             # Formata quebras de linha
@@ -145,6 +153,11 @@ jobs:
             FEAT_INFO="${FEAT_INFO} $ISSUE_FEAT_INFO"
           fi
 
+          if [ -n "$ISSUE_TEC_NOTE_INFO" ]; then
+            # Formata quebras de linha
+            ISSUE_TEC_NOTE_INFO=$(echo "$ISSUE_TEC_NOTE_INFO" | tr '\n' '|')
+            TEC_NOTE_INFO="${TEC_NOTE_INFO} $ISSUE_TEC_NOTE_INFO"
+          fi
 
           # Altera o titlul da tarefa concatenando a release.
           curl -u $JIRA_USERNAME:$JIRA_API_TOKEN \
@@ -160,10 +173,12 @@ jobs:
         echo $BREAK_CHANGE_INFO
         echo $BUG_FIX_INFO
         echo $FEAT_INFO
+        echo $TEC_NOTE_INFO
 
         echo "::set-output name=BREAK_CHANGE_INFO::$BREAK_CHANGE_INFO"
         echo "::set-output name=BUG_FIX_INFO::$BUG_FIX_INFO"
         echo "::set-output name=FEAT_INFO::$FEAT_INFO"
+        echo "::set-output name=TEC_NOTE_INFO::$TEC_NOTE_INFO"
       shell: bash
 
       

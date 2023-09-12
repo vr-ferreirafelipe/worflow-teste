@@ -21,6 +21,9 @@ on:
       BREAK_CHANGE_INFO:
         required: true
         type: string
+      TEC_NOTE_INFO:
+        required: true
+        type: string
       JIRA_ISSUE_KEYS:
         required: true
         type: string
@@ -49,6 +52,7 @@ jobs:
           BUG_FIX_INFO="${{ inputs.BUG_FIX_INFO }}"
           FEAT_INFO="${{ inputs.FEAT_INFO }}"
           BREAK_CHANGE_INFO="${{ inputs.BREAK_CHANGE_INFO }}"
+          TEC_NOTE_INFO="${{ inputs.TEC_NOTE_INFO }}"
 
           JIRA_ISSUE_KEYS="${{ inputs.JIRA_ISSUE_KEYS }}"
 
@@ -89,6 +93,13 @@ jobs:
 
             FEAT_INFO=$(echo "$FEAT_INFO" | sed 's/|/\n/g')
             echo "$FEAT_INFO"  >> "$releaseNoteFile"
+          fi
+
+          if [ -n "$TEC_NOTE_INFO" ]; then
+            echo "### Notas Técnica:" >> "$releaseNoteFile"
+
+            TEC_NOTE_INFO=$(echo "$TEC_NOTE_INFO" | sed 's/|/\n/g')
+            echo "$TEC_NOTE_INFO"  >> "$releaseNoteFile"
           fi
 
           echo "" >> "$releaseNoteFile"

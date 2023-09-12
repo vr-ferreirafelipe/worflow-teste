@@ -100,4 +100,5 @@ jobs:
       BUG_FIX_INFO: ${{ needs.run_jira_integration.outputs.BUG_FIX_INFO }} 
       FEAT_INFO: ${{ needs.run_jira_integration.outputs.FEAT_INFO }} 
       BREAK_CHANGE_INFO: ${{ needs.run_jira_integration.outputs.BREAK_CHANGE_INFO }} 
+      TEC_NOTE_INFO: ${{ needs.run_jira_integration.outputs.TEC_NOTE_INFO }} 
       JIRA_ISSUE_KEYS: ${{ needs.run_jira_integration.outputs.ISSUE_KEYS }} 
