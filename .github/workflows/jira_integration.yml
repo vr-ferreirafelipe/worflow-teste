@@ -165,7 +165,7 @@ jobs:
               -H "Content-Type: application/json" \
               --data '{
                 "fields": {
-                  "customfield_10116": "'"${NEW_VERSION}"'"
+                  "customfield_10116": "'"v${NEW_VERSION}"'"
                 }
               }'
         done
