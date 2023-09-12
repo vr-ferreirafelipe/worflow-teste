@@ -106,7 +106,7 @@ jobs:
         # customfield_10117 = [DOC] - Notas Técnicas
 
         # Definir os compos jira
-        JIRA_FIELDS="customfield_10113,customfield_10114,customfield_10115,customfield_10116,customfield_10117"
+        JIRA_FIELDS="customfield_10113,customfield_10114,customfield_10115,customfield_10117"
 
         ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
 
@@ -165,7 +165,7 @@ jobs:
               -H "Content-Type: application/json" \
               --data '{
                 "fields": {
-                  "customfield_10112": "'"${NEW_VERSION}"'"
+                  "customfield_10116": "'"${NEW_VERSION}"'"
                 }
               }'
         done
