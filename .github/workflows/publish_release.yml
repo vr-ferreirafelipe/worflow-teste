@@ -4,9 +4,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  check-commit:
+    name: Check Commit
+    uses: vrsoftbr/reusable-workflows/.github/workflows/check-commit.yml@inovar
+    secrets:
+      VRPACKAGETOKEN: ${{ secrets.VRPACKAGETOKEN }}
+
   run_check_changes:
     name: Run check changes
-    uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/check-changes.yml
+    uses: vrsoftbr/vrmobilereusableworkflows/.github/workflows/check-changes.yml
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
