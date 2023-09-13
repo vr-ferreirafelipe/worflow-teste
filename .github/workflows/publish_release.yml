@@ -21,19 +21,6 @@ jobs:
       LAST_VERSION: ${{ needs.run_check_changes.outputs.LAST_VERSION }}
       COMMIT_MESSAGES: ${{ needs.run_check_changes.outputs.COMMIT_MESSAGES }} 
 
-  # run_generate_new_tag:
-  #   name: Run generate new release
-  #   uses: ./.github/workflows/generate-release-tag.yaml
-    
-  #   needs: run_check_changes
-  #   if: needs.run_check_changes.outputs.HAS_CHANGES
-    
-  #   secrets:
-  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
-  #   with:
-  #     LAST_VERSION: ${{ needs.run_check_changes.outputs.LAST_VERSION }}
-  #     COMMIT_MESSAGES: ${{ needs.run_check_changes.outputs.COMMIT_MESSAGES }} 
-
   # publish_release:
   #   name: Publicar nova versão
   #   needs: 
@@ -77,7 +64,7 @@ jobs:
 
   run_jira_issue_release:
     name: Run Jira Integration
-    uses: ./.github/workflows/jira_issue_release.yml
+    uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/jira_issue_release.yml
     needs: 
       - run_check_changes
       - run_generate_new_tag
