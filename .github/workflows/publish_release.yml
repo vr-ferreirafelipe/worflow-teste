@@ -10,18 +10,29 @@ jobs:
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
-  run_generate_release_tag:
-    name: Run generate new release
-    uses: ./.github/workflows/generate-release-tag.yaml
-    
+  run_generate_new_tag:
+    name: Run generate new Tag
+    uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/generate-new-tag.yml@MOB-1094
     needs: run_check_changes
     if: needs.run_check_changes.outputs.HAS_CHANGES
-    
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
     with:
       LAST_VERSION: ${{ needs.run_check_changes.outputs.LAST_VERSION }}
       COMMIT_MESSAGES: ${{ needs.run_check_changes.outputs.COMMIT_MESSAGES }} 
+
+  # run_generate_release_tag:
+  #   name: Run generate new release
+  #   uses: ./.github/workflows/generate-release-tag.yaml
+    
+  #   needs: run_check_changes
+  #   if: needs.run_check_changes.outputs.HAS_CHANGES
+    
+  #   secrets:
+  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+  #   with:
+  #     LAST_VERSION: ${{ needs.run_check_changes.outputs.LAST_VERSION }}
+  #     COMMIT_MESSAGES: ${{ needs.run_check_changes.outputs.COMMIT_MESSAGES }} 
 
   # publish_release:
   #   name: Publicar nova versão
