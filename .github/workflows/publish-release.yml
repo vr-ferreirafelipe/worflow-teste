@@ -13,9 +13,6 @@ on:
 jobs:
  publish_release:
     name: Publicar nova release
-    needs: 
-      - run_check_changes
-      - run_generate_new_tag
     if: github.ref == 'refs/heads/main' && inputs.NEW_VERSION
 
     runs-on: ubuntu-latest
