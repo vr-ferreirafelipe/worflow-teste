@@ -1,0 +1,52 @@
+name: Publica nova release
+
+on:
+  workflow_call:
+    secrets:
+      VR_PACKAGE_TOKEN:
+        required: true
+    inputs:
+      NEW_VERSION:
+        required: true
+        type: string
+
+jobs:
+ publish_release:
+    name: Publicar nova release
+    needs: 
+      - run_check_changes
+      - run_generate_new_tag
+    if: github.ref == 'refs/heads/main' && inputs.NEW_VERSION
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.VRPACKAGETOKEN }}
+          fetch-depth: 0
+          ref: main
+
+      - name: Git Config
+        run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
+
+      - name: Upgrade release on packages
+        id: upgrade_release_package
+        run: |
+          NEW_VERSION=${{ inputs.outputs.NEW_VERSION }}
+
+          npm --no-git-tag-version version $NEW_VERSION
+          git add . 
+          git commit -m "ci: Entrega da versão $NEW_VERSION"
+          git push
+
+      - name: Publish Release
+        id: publish_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+        with:
+          tag_name: v${{ inputs.NEW_VERSION }}
+          release_name: Release v${{ inputs.NEW_VERSION }}
+          commitish: main
