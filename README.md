@@ -15,4 +15,4 @@ TESTE commit que nao geram release
 TESTE FEAT 2 tarefas
 ADD MOB-1094
 
-Gerar break change
+Gerar break change 
