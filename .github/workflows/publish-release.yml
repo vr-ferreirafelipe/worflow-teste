@@ -83,7 +83,7 @@ jobs:
 
   run_release_notes:
     name: Run release notes
-    uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/release-notes-from-github-wiki.yml
+    uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/release-notes-from-github-wiki.yml@MOB-1094
     needs: 
       - run_check_changes
       - run_generate_new_tag
