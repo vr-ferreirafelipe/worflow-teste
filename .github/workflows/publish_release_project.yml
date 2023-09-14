@@ -24,7 +24,7 @@ jobs:
 
   run_publish_release:
     name: Run publish release
-    uses: ./publish-release.yml
+    uses: ./.github/workflows/publish-release.yml
     needs: 
       - run_check_changes
       - run_generate_new_tag
