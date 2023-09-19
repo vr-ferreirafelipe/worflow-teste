@@ -8,3 +8,4 @@ TESTES DE FIX
   commit refactor 2.0.3
   commit refactor(escopo) 2.0.4
   commit perf 2.0.5
+  commit perf(escopo) 2.0.6
