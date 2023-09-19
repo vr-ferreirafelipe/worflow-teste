@@ -13,4 +13,4 @@ TESTES DE FIX
 TESTE DE FEAT (MINOR)
   commit feat 2.1.0
   commit feat(texto) 2.2.0
-  commit feat  fix 2.3.0
+  commit feat e outro commits fix 2.3.0
