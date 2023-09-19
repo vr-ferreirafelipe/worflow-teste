@@ -19,11 +19,11 @@ jobs:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
     with:
       LAST_VERSION: ${{ needs.run_check_changes.outputs.LAST_VERSION }}
-      COMMIT_MESSAGES: ${{ needs.run_check_changes.outputs.COMMIT_MESSAGES }} 
+      COMMIT_MESSAGES: ${{ needs.run_check_changes.outputs.COMMIT_MESSAGES }}
 
   publish_release:
     name: Publicar nova versão
-    needs: 
+    needs:
       - run_check_changes
       - run_generate_new_tag
     if: github.ref == 'refs/heads/main' && needs.run_check_changes.outputs.HAS_CHANGES && needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE
@@ -65,7 +65,7 @@ jobs:
   run_jira_issue_release:
     name: Run Jira Integration
     uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/jira_issue_release.yml@MOB-1094
-    needs: 
+    needs:
       - run_check_changes
       - run_generate_new_tag
       - publish_release
@@ -76,15 +76,15 @@ jobs:
       JIRA_USER_EMAIL: ${{ secrets.VRJIRAEMAIL }}
       JIRA_API_TOKEN: ${{ secrets.VRJIRAAPITOKEN }}
     with:
-      JIRA_ISSUE_PREFIX: 'MOB'
-      COMMIT_MESSAGES: ${{ needs.run_check_changes.outputs.COMMIT_MESSAGES }} 
-      NEW_VERSION: ${{ needs.run_generate_new_tag.outputs.NEW_VERSION }} 
-      HAS_NEW_RELEASE: ${{ needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE }} 
+      JIRA_ISSUE_PREFIX: "MOB"
+      COMMIT_MESSAGES: ${{ needs.run_check_changes.outputs.COMMIT_MESSAGES }}
+      NEW_VERSION: ${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
+      HAS_NEW_RELEASE: ${{ needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE }}
 
   run_release_notes:
     name: Run release notes
     uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/release-notes-from-github-wiki.yml@MOB-1094
-    needs: 
+    needs:
       - run_check_changes
       - run_generate_new_tag
       - publish_release
@@ -94,9 +94,9 @@ jobs:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
     with:
       GITHUB_REPOSITORY: $GITHUB_REPOSITORY
-      NEW_VERSION: ${{ needs.run_generate_new_tag.outputs.NEW_VERSION }} 
-      BUG_FIX_INFO: ${{ needs.run_jira_issue_release.outputs.BUG_FIX_INFO }} 
-      FEAT_INFO: ${{ needs.run_jira_issue_release.outputs.FEAT_INFO }} 
-      BREAK_CHANGE_INFO: ${{ needs.run_jira_issue_release.outputs.BREAK_CHANGE_INFO }} 
-      TEC_NOTE_INFO: ${{ needs.run_jira_issue_release.outputs.TEC_NOTE_INFO }} 
-      JIRA_ISSUE_KEYS: ${{ needs.run_jira_issue_release.outputs.ISSUE_KEYS }} 
+      NEW_VERSION: ${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
+      BUG_FIX_INFO: ${{ needs.run_jira_issue_release.outputs.BUG_FIX_INFO }}
+      FEAT_INFO: ${{ needs.run_jira_issue_release.outputs.FEAT_INFO }}
+      BREAKING_CHANGE_INFO: ${{ needs.run_jira_issue_release.outputs.BREAKING_CHANGE_INFO }}
+      TEC_NOTE_INFO: ${{ needs.run_jira_issue_release.outputs.TEC_NOTE_INFO }}
+      JIRA_ISSUE_KEYS: ${{ needs.run_jira_issue_release.outputs.ISSUE_KEYS }}

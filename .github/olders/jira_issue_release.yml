@@ -34,9 +34,9 @@ on:
       FEAT_INFO:
         description: "Armazena os dados de novos recursos documentado no jira."
         value: ${{ jobs.get_and_update_issue.outputs.FEAT_INFO }}
-      BREAK_CHANGE_INFO:
+      BREAKING_CHANGE_INFO:
         description: "Armazena os dados de break change documentado no jira."
-        value: ${{ jobs.get_and_update_issue.outputs.BREAK_CHANGE_INFO }}
+        value: ${{ jobs.get_and_update_issue.outputs.BREAKING_CHANGE_INFO }}
       TEC_NOTE_INFO:
         description: "Armazena os dados de break change documentado no jira."
         value: ${{ jobs.get_and_update_issue.outputs.TEC_NOTE_INFO }}
@@ -49,136 +49,132 @@ jobs:
       ISSUE_KEYS: ${{ steps.find_issue_key.outputs.ISSUE_KEYS }}
       BUG_FIX_INFO: ${{ steps.update_issues.outputs.BUG_FIX_INFO }}
       FEAT_INFO: ${{ steps.update_issues.outputs.FEAT_INFO }}
-      BREAK_CHANGE_INFO: ${{ steps.update_issues.outputs.BREAK_CHANGE_INFO }}
-      TEC_NOTE_INFO:  ${{ steps.update_issues.outputs.TEC_NOTE_INFO }}
+      BREAKING_CHANGE_INFO: ${{ steps.update_issues.outputs.BREAKING_CHANGE_INFO }}
+      TEC_NOTE_INFO: ${{ steps.update_issues.outputs.TEC_NOTE_INFO }}
 
     steps:
-    - name: Find issue key from commit messages
-      id: find_issue_key
-      if: inputs.HAS_NEW_RELEASE
-      run: |
-        COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
+      - name: Find issue key from commit messages
+        id: find_issue_key
+        if: inputs.HAS_NEW_RELEASE
+        run: |
+          COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
 
-        # Encontra nas mensagens de commits as tarefas referenciadas.
-        ALL_ISSUE_KEYS=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.JIRA_ISSUE_PREFIX }}-[0-9]\+')
-        
-        # Remove resultados diplicados
-        DISTINCT_ISSUE_KEYS=$(echo "$ALL_ISSUE_KEYS" | sort | uniq)
-        echo $DISTINCT_ISSUE_KEYS
+          # Encontra nas mensagens de commits as tarefas referenciadas.
+          ALL_ISSUE_KEYS=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.JIRA_ISSUE_PREFIX }}-[0-9]\+')
 
-        if [ -n "$DISTINCT_ISSUE_KEYS" ]; then
-          echo "::set-output name=ISSUE_KEYS::"$DISTINCT_ISSUE_KEYS""
-        else
-          echo "Nenhuma tarefa foi referencia nos ultimos commits."
-        fi
+          # Remove resultados diplicados
+          DISTINCT_ISSUE_KEYS=$(echo "$ALL_ISSUE_KEYS" | sort | uniq)
+          echo $DISTINCT_ISSUE_KEYS
 
+          if [ -n "$DISTINCT_ISSUE_KEYS" ]; then
+            echo "::set-output name=ISSUE_KEYS::"$DISTINCT_ISSUE_KEYS""
+          else
+            echo "Nenhuma tarefa foi referencia nos ultimos commits."
+          fi
 
-    - name: Update Issues from JIRA
-      run: |
-        # Recupere as variáveis de ambiente
-        JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
-        JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
+      - name: Update Issues from JIRA
+        run: |
+          # Recupere as variáveis de ambiente
+          JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
+          JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
 
-        ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
-        ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-          -X GET "$JIRA_BASE_URL/rest/api/2/issue/MOB-1094")
-
-        echo $ISSUE_JSON
-
-
-    - name: Update Issues from JIRA
-      id: update_issues
-      if: steps.find_issue_key.outputs.ISSUE_KEYS
-      run: |
-        # Recupere as variáveis de ambiente
-        JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
-        JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
-
-        # Recuperar os inputs
-        NEW_VERSION=${{ inputs.NEW_VERSION }}
-
-        # customfield_10113 = [DOC] - Correções realizadas
-        # customfield_10115 = [DOC] - Break Change
-        # customfield_10114 = [DOC] - Recursos adicionados
-        # customfield_10116 = Release Tag
-        # customfield_10117 = [DOC] - Notas Técnicas
-
-        # Definir os compos jira
-        JIRA_FIELDS="customfield_10113,customfield_10114,customfield_10115,customfield_10117"
-
-        ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
-
-        BREAK_CHANGE_INFO=""
-        BUG_FIX_INFO=""
-        FEAT_INFO=""
-
-        for ISSUE_KEY in $ISSUE_KEYS; do
-          echo $ISSUE_KEY
-
-          # Busca tarefa pelo JIRA API.
+          ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
           ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-            -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
+            -X GET "$JIRA_BASE_URL/rest/api/2/issue/MOB-1094")
 
-          # Desestrutura o objeto de resposta
-          ISSUE_BREAK_CHANGE_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10115')
-          ISSUE_BREAK_CHANGE_INFO=$(echo "$ISSUE_BREAK_CHANGE_INFO" | sed 's/^null$/''/')
+          echo $ISSUE_JSON
 
-          ISSUE_BUG_FIX_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10113')
-          ISSUE_BUG_FIX_INFO=$(echo "$ISSUE_BUG_FIX_INFO" | sed 's/^null$/''/')
+      - name: Update Issues from JIRA
+        id: update_issues
+        if: steps.find_issue_key.outputs.ISSUE_KEYS
+        run: |
+          # Recupere as variáveis de ambiente
+          JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
+          JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
 
-          ISSUE_FEAT_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10114')
-          ISSUE_FEAT_INFO=$(echo "$ISSUE_FEAT_INFO" | sed 's/^null$/''/')
+          # Recuperar os inputs
+          NEW_VERSION=${{ inputs.NEW_VERSION }}
 
-          ISSUE_TEC_NOTE_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10117')
-          ISSUE_TEC_NOTE_INFO=$(echo "$ISSUE_TEC_NOTE_INFO" | sed 's/^null$/''/')
+          # customfield_10113 = [DOC] - Correções realizadas
+          # customfield_10115 = [DOC] - Break Change
+          # customfield_10114 = [DOC] - Recursos adicionados
+          # customfield_10116 = Release Tag
+          # customfield_10117 = [DOC] - Notas Técnicas
 
-          # Verifique se a saída do jq não está vazia
-          if [ -n "$ISSUE_BREAK_CHANGE_INFO" ]; then
-            # Formata quebras de linha
-            ISSUE_BREAK_CHANGE_INFO=$(echo "$ISSUE_BREAK_CHANGE_INFO" | tr '\n' '|')
-            BREAK_CHANGE_INFO="${BREAK_CHANGE_INFO} $ISSUE_BREAK_CHANGE_INFO"
-          fi
+          # Definir os compos jira
+          JIRA_FIELDS="customfield_10113,customfield_10114,customfield_10115,customfield_10117"
 
-          if [ -n "$ISSUE_BUG_FIX_INFO" ]; then
-            # Formata quebras de linha
-            ISSUE_BUG_FIX_INFO=$(echo "$ISSUE_BUG_FIX_INFO" | tr '\n' '|')
-            BUG_FIX_INFO="${BUG_FIX_INFO} $ISSUE_BUG_FIX_INFO"
-          fi
+          ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
 
-          if [ -n "$ISSUE_FEAT_INFO" ]; then
-            # Formata quebras de linha
-            ISSUE_FEAT_INFO=$(echo "$ISSUE_FEAT_INFO" | tr '\n' '|')
-            FEAT_INFO="${FEAT_INFO} $ISSUE_FEAT_INFO"
-          fi
+          BREAKING_CHANGE_INFO=""
+          BUG_FIX_INFO=""
+          FEAT_INFO=""
 
-          if [ -n "$ISSUE_TEC_NOTE_INFO" ]; then
-            # Formata quebras de linha
-            ISSUE_TEC_NOTE_INFO=$(echo "$ISSUE_TEC_NOTE_INFO" | tr '\n' '|')
-            TEC_NOTE_INFO="${TEC_NOTE_INFO} $ISSUE_TEC_NOTE_INFO"
-          fi
+          for ISSUE_KEY in $ISSUE_KEYS; do
+            echo $ISSUE_KEY
 
-          # Altera o titlul da tarefa concatenando a release.
-          curl -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-              -X PUT "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY" \
-              -H "Content-Type: application/json" \
-              --data '{
-                "fields": {
-                  "customfield_10116": "'"v${NEW_VERSION}"'"
-                }
-              }'
-        done
+            # Busca tarefa pelo JIRA API.
+            ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+              -X GET "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY?fields=$JIRA_FIELDS")
 
-        echo $BREAK_CHANGE_INFO
-        echo $BUG_FIX_INFO
-        echo $FEAT_INFO
-        echo $TEC_NOTE_INFO
+            # Desestrutura o objeto de resposta
+            ISSUE_BREAKING_CHANGE_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10115')
+            ISSUE_BREAKING_CHANGE_INFO=$(echo "$ISSUE_BREAKING_CHANGE_INFO" | sed 's/^null$/''/')
 
-        echo "::set-output name=BREAK_CHANGE_INFO::$BREAK_CHANGE_INFO"
-        echo "::set-output name=BUG_FIX_INFO::$BUG_FIX_INFO"
-        echo "::set-output name=FEAT_INFO::$FEAT_INFO"
-        echo "::set-output name=TEC_NOTE_INFO::$TEC_NOTE_INFO"
-      shell: bash
+            ISSUE_BUG_FIX_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10113')
+            ISSUE_BUG_FIX_INFO=$(echo "$ISSUE_BUG_FIX_INFO" | sed 's/^null$/''/')
 
-      
+            ISSUE_FEAT_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10114')
+            ISSUE_FEAT_INFO=$(echo "$ISSUE_FEAT_INFO" | sed 's/^null$/''/')
+
+            ISSUE_TEC_NOTE_INFO=$(echo $ISSUE_JSON | jq -r '.fields.customfield_10117')
+            ISSUE_TEC_NOTE_INFO=$(echo "$ISSUE_TEC_NOTE_INFO" | sed 's/^null$/''/')
+
+            # Verifique se a saída do jq não está vazia
+            if [ -n "$ISSUE_BREAKING_CHANGE_INFO" ]; then
+              # Formata quebras de linha
+              ISSUE_BREAKING_CHANGE_INFO=$(echo "$ISSUE_BREAKING_CHANGE_INFO" | tr '\n' '|')
+              BREAKING_CHANGE_INFO="${BREAKING_CHANGE_INFO} $ISSUE_BREAKING_CHANGE_INFO"
+            fi
+
+            if [ -n "$ISSUE_BUG_FIX_INFO" ]; then
+              # Formata quebras de linha
+              ISSUE_BUG_FIX_INFO=$(echo "$ISSUE_BUG_FIX_INFO" | tr '\n' '|')
+              BUG_FIX_INFO="${BUG_FIX_INFO} $ISSUE_BUG_FIX_INFO"
+            fi
+
+            if [ -n "$ISSUE_FEAT_INFO" ]; then
+              # Formata quebras de linha
+              ISSUE_FEAT_INFO=$(echo "$ISSUE_FEAT_INFO" | tr '\n' '|')
+              FEAT_INFO="${FEAT_INFO} $ISSUE_FEAT_INFO"
+            fi
+
+            if [ -n "$ISSUE_TEC_NOTE_INFO" ]; then
+              # Formata quebras de linha
+              ISSUE_TEC_NOTE_INFO=$(echo "$ISSUE_TEC_NOTE_INFO" | tr '\n' '|')
+              TEC_NOTE_INFO="${TEC_NOTE_INFO} $ISSUE_TEC_NOTE_INFO"
+            fi
+
+            # Altera o titlul da tarefa concatenando a release.
+            curl -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+                -X PUT "$JIRA_BASE_URL/rest/api/2/issue/$ISSUE_KEY" \
+                -H "Content-Type: application/json" \
+                --data '{
+                  "fields": {
+                    "customfield_10116": "'"v${NEW_VERSION}"'"
+                  }
+                }'
+          done
+
+          echo $BREAKING_CHANGE_INFO
+          echo $BUG_FIX_INFO
+          echo $FEAT_INFO
+          echo $TEC_NOTE_INFO
+
+          echo "::set-output name=BREAKING_CHANGE_INFO::$BREAKING_CHANGE_INFO"
+          echo "::set-output name=BUG_FIX_INFO::$BUG_FIX_INFO"
+          echo "::set-output name=FEAT_INFO::$FEAT_INFO"
+          echo "::set-output name=TEC_NOTE_INFO::$TEC_NOTE_INFO"
+        shell: bash

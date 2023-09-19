@@ -14,3 +14,6 @@ TESTE DE FEAT (MINOR)
   commit feat 2.1.0
   commit feat(texto) 2.2.0
   commit feat e outro commits fix 2.3.0
+
+TESTE DE BREAKING CHANGES (MAJOR)
+  commit fix! 3.0.0
