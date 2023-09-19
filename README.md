@@ -17,3 +17,4 @@ TESTE DE FEAT (MINOR)
 
 TESTE DE BREAKING CHANGES (MAJOR)
   commit fix! 3.0.0
+  commit feat(escopo)! 4.0.0
