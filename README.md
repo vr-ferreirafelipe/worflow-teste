@@ -9,3 +9,6 @@ TESTES DE FIX
   commit refactor(escopo) 2.0.4
   commit perf 2.0.5
   commit perf(escopo) 2.0.6
+
+TESTE DE FEAT (MINOR)
+  commit feat 2.1.0
