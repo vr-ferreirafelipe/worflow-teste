@@ -5,13 +5,15 @@ on:
     secrets:
       VR_PACKAGE_TOKEN:
         required: true
-      JIRA_BASE_URL:
-        required: true
-      JIRA_USER_EMAIL:
-        required: true
       JIRA_API_TOKEN:
         required: true
     inputs:
+      JIRA_BASE_URL:
+        required: true
+        type: string
+      JIRA_USER_EMAIL:
+        required: true
+        type: string
       JIRA_ISSUE_PREFIX:
         required: true
         type: string
@@ -38,7 +40,7 @@ on:
         description: "Armazena os dados de break change documentado no jira."
         value: ${{ jobs.get_and_update_issue.outputs.BREAKING_CHANGE_INFO }}
       TEC_NOTE_INFO:
-        description: "Armazena os dados de break change documentado no jira."
+        description: "Armazena os dados de notas técnicas documentado no jira."
         value: ${{ jobs.get_and_update_issue.outputs.TEC_NOTE_INFO }}
 
 jobs:
@@ -57,15 +59,17 @@ jobs:
         id: find_issue_key
         if: inputs.HAS_NEW_RELEASE
         run: |
+          # caputura os inputs
           COMMIT_MESSAGES="${{ inputs.COMMIT_MESSAGES }}"
 
           # Encontra nas mensagens de commits as tarefas referenciadas.
           ALL_ISSUE_KEYS=$(echo "$COMMIT_MESSAGES" | grep -o '${{ inputs.JIRA_ISSUE_PREFIX }}-[0-9]\+')
 
-          # Remove resultados diplicados
+          # Remove resultados de id das tarefas diplicadas
           DISTINCT_ISSUE_KEYS=$(echo "$ALL_ISSUE_KEYS" | sort | uniq)
           echo $DISTINCT_ISSUE_KEYS
 
+          #  exporta a variavel ISSUE_KEYS, id das tarefas encontradas, como output 
           if [ -n "$DISTINCT_ISSUE_KEYS" ]; then
             echo "::set-output name=ISSUE_KEYS::"$DISTINCT_ISSUE_KEYS""
           else
@@ -73,45 +77,28 @@ jobs:
           fi
 
       - name: Update Issues from JIRA
-        run: |
-          # Recupere as variáveis de ambiente
-          JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
-          JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
-
-          ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
-          ISSUE_JSON=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-            -X GET "$JIRA_BASE_URL/rest/api/2/issue/MOB-1094")
-
-          echo $ISSUE_JSON
-
-      - name: Update Issues from JIRA
         id: update_issues
         if: steps.find_issue_key.outputs.ISSUE_KEYS
         run: |
-          # Recupere as variáveis de ambiente
-          JIRA_USERNAME=${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
-          JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}
+          # caputura os inputs
+          JIRA_USERNAME=${{ inputs.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN=${{ secrets.VRJIRAAPITOKEN }}
+          JIRA_BASE_URL=${{ inputs.JIRA_BASE_URL }}
 
-          # Recuperar os inputs
+          # caputura os inputs
           NEW_VERSION=${{ inputs.NEW_VERSION }}
 
-          # customfield_10113 = [DOC] - Correções realizadas
-          # customfield_10115 = [DOC] - Break Change
-          # customfield_10114 = [DOC] - Recursos adicionados
-          # customfield_10116 = Release Tag
-          # customfield_10117 = [DOC] - Notas Técnicas
-
-          # Definir os compos jira
+          # Definir os compos jira a serem recuperados
           JIRA_FIELDS="customfield_10113,customfield_10114,customfield_10115,customfield_10117"
 
+          # captura as issues exportadas pela step anterior
           ISSUE_KEYS="${{ steps.find_issue_key.outputs.ISSUE_KEYS }}"
 
           BREAKING_CHANGE_INFO=""
           BUG_FIX_INFO=""
           FEAT_INFO=""
 
+          #  Inicia download das informações do jira por id tarefa encontrado
           for ISSUE_KEY in $ISSUE_KEYS; do
             echo $ISSUE_KEY
 
@@ -168,11 +155,7 @@ jobs:
                 }'
           done
 
-          echo $BREAKING_CHANGE_INFO
-          echo $BUG_FIX_INFO
-          echo $FEAT_INFO
-          echo $TEC_NOTE_INFO
-
+          #  export as variaveis com as informacoes docker speradas pelo tipos
           echo "::set-output name=BREAKING_CHANGE_INFO::$BREAKING_CHANGE_INFO"
           echo "::set-output name=BUG_FIX_INFO::$BUG_FIX_INFO"
           echo "::set-output name=FEAT_INFO::$FEAT_INFO"
