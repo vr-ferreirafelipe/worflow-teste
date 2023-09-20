@@ -64,8 +64,8 @@ jobs:
 
   run_jira_issue_release:
     name: Run Jira Integration
-    # uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/jira_issue_release.yml@MOB-1094
-    uses: ./jira_issue_release.yml@main
+    uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/jira_issue_release.yml@MOB-1094
+    # uses: ./jira_issue_release.yml@main
     needs:
       - run_check_changes
       - run_generate_new_tag
