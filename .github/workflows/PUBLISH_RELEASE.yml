@@ -64,7 +64,7 @@ jobs:
 
   run-leave-it-up-to-date:
     name: Run leave it up to date
-    uses: ./leave-it-up-to-date.yml
+    uses: ./.github/workflows/leave-it-up-to-date.yml
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
     with:
