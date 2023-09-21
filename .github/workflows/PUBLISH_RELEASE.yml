@@ -65,7 +65,7 @@ jobs:
 
   run-keep-up-to-date:
     name: Manter homolog em dia
-    uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/keep-up-to-date.yml
+    uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/keep-up-to-date.yml@MOB-1094
     needs:
       - run_check_changes
       - run_generate_new_tag
