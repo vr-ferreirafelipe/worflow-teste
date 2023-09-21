@@ -19,8 +19,9 @@ jobs:
       - name: Checkout do Código
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.VR_PACKAGE_TOKEN }}s
+          token: ${{ secrets.VR_PACKAGE_TOKEN }}
           fetch-depth: 0
+          ref: main
 
       - name: Verificar se a branch existe
         run: |
