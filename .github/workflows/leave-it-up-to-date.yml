@@ -12,6 +12,7 @@ on:
 
 jobs:
   leave-it-up-to-date:
+    name: Espelhar branch main.
     runs-on: ubuntu-latest
 
     steps:
@@ -25,13 +26,14 @@ jobs:
           if ! git show-ref --quiet refs/heads/$BRANCH; then
             # Se a branch não existir será criada
             git checkout -b $BRANCH origin/main
+            echo "Criou ------------------------"
           fi
 
-      - name: Atualizar a branch
+      - name: Atualizar a branch com a main
         run: |
           BRANCH=${{ inputs.BRANCH }}
 
           git fetch origin main
           git checkout $BRANCH
           git merge --ff-only origin/main
-          git push origin BRANCH
+          git push origin $BRANCH
