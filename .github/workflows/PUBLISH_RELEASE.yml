@@ -62,17 +62,35 @@ jobs:
           release_name: Release v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
           commitish: main
 
-  run-leave-it-up-to-date:
-    name: Run leave it up to date
-    uses: ./.github/workflows/leave-it-up-to-date.yml
-    secrets:
-      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}    
-    needs:
-      - run_check_changes
-      - run_generate_new_tag
-      - publish_release
-    with:
-      BRANCH: "homolog"
+      - name: Verificar se a branch existe
+        run: |
+          BRANCH=${{ inputs.BRANCH }}
+
+          if ! git rev-parse --verify $BRANCH; then
+            # Se a branch não existir será criada
+            git checkout -b $BRANCH origin/main
+          fi
+
+      - name: Atualizar a branch com a main
+        run: |
+          BRANCH=${{ inputs.BRANCH }}
+
+          git fetch origin main
+          git checkout $BRANCH
+          git merge --ff-only origin/main
+          git push origin $BRANCH
+
+  # run-leave-it-up-to-date:
+  #   name: Run leave it up to date
+  #   uses: ./.github/workflows/leave-it-up-to-date.yml
+  #   secrets:
+  #     VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+  #   needs:
+  #     - run_check_changes
+  #     - run_generate_new_tag
+  #     - publish_release
+  #   with:
+  #     BRANCH: "homolog"
 
   run_jira_issue_release:
     name: Run Jira Integration
