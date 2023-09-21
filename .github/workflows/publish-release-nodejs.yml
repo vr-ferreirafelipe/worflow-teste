@@ -33,7 +33,7 @@ jobs:
           ref: main
 
       - name: Git Config
-        run: git config --global user.email "${inputs.GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${inputs.GITHUB_ACTOR}"
+        run: git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com" && git config --global user.name "$GITHUB_ACTOR"
 
       - name: Upgrade release on packages
         id: upgrade_release_package
@@ -57,5 +57,4 @@ jobs:
 
       - name: Set Status IS_PUBLISHED
         id: export_status
-        run: |
-          echo "::set-output name=IS_PUBLISHED::$IS_PUBLISHED"
+        run: echo "::set-output name=IS_PUBLISHED::$IS_PUBLISHED"
