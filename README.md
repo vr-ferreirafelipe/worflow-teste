@@ -22,3 +22,4 @@ commit refact(escopo)! 5.0.0
 commit perf! 6.0.0
 
 TESTE SECRETS GLOBAL
+teste
