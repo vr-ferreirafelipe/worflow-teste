@@ -11,7 +11,7 @@ on:
         type: string
 
 jobs:
-  leave-it-up-to-date:
+  keep-it-up-to-date:
     name: Espelhar branch main.
     runs-on: ubuntu-latest
 

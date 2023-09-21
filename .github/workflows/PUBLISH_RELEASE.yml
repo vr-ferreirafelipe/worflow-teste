@@ -64,8 +64,8 @@ jobs:
   #         commitish: main
 
   run-publish-release:
-    name: Run leave it up to date
-    uses: ./.github/workflows/leave-it-up-to-date.yml
+    name: Publicar versão
+    uses: ./.github/workflows/publish-release-nodejs.yml
     needs:
       - run_check_changes
       - run_generate_new_tag
@@ -77,8 +77,8 @@ jobs:
       NEW_VERSION: v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
 
   run-keep-up-to-date:
-    name: Run leave it up to date
-    uses: ./.github/workflows/leave-it-up-to-date.yml
+    name: Manter homolog em dia
+    uses: ./.github/workflows/keep-up-to-date.yml
     needs:
       - run_check_changes
       - run_generate_new_tag
