@@ -6,9 +6,6 @@ on:
       VR_PACKAGE_TOKEN:
         required: true
     inputs:
-      GITHUB_ACTOR:
-        required: true
-        type: string
       NEW_VERSION:
         required: true
         type: string
@@ -57,4 +54,4 @@ jobs:
 
       - name: Set Status IS_PUBLISHED
         id: export_status
-        run: echo "::set-output name=IS_PUBLISHED::$IS_PUBLISHED"
+        run: echo "::set-output name=IS_PUBLISHED::true"

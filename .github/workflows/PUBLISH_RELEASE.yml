@@ -73,7 +73,6 @@ jobs:
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
     with:
-      GITHUB_ACTOR: $GITHUB_ACTOR
       NEW_VERSION: v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
 
   run-keep-up-to-date:
