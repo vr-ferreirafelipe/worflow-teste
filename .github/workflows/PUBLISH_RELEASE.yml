@@ -65,7 +65,6 @@ jobs:
 
   run-publish-release:
     name: Publicar versão
-
     uses: ./.github/workflows/publish-release-nodejs.yml
     needs:
       - run_check_changes
