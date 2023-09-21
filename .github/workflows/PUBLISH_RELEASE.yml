@@ -62,8 +62,8 @@ jobs:
           release_name: Release v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
           commitish: main
 
-  leave-it-up-to-date:
-    name: Espelhar branch main.
+  homolog-up-to-date:
+    name: Atualizar Homolog.
     needs:
       - run_check_changes
       - run_generate_new_tag
@@ -77,21 +77,17 @@ jobs:
 
       - name: Verificar se a branch existe
         run: |
-          BRANCH=${{ inputs.BRANCH }}
-
-          if ! git rev-parse --verify $BRANCH; then
+          if ! git rev-parse --verify homolog; then
             # Se a branch não existir será criada
-            git checkout -b $BRANCH origin/main
+            git checkout -b homolog origin/main
           fi
 
       - name: Atualizar a branch com a main
         run: |
-          BRANCH=${{ inputs.BRANCH }}
-
           git fetch origin main
-          git checkout $BRANCH
+          git checkout homolog
           git merge --ff-only origin/main
-          git push origin $BRANCH
+          git push origin homolog
 
   run_jira_issue_release:
     name: Run Jira Integration
