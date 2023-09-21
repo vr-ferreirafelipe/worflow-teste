@@ -82,7 +82,7 @@ jobs:
       - run_check_changes
       - run_generate_new_tag
       - run-publish-release
-    if: needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE && needs.release.outputs.IS_PUBLISHED
+    if: needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE && needs.run-publish-release.outputs.IS_PUBLISHED
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
     with:
