@@ -27,7 +27,6 @@ jobs:
             # Se a branch não existir será criada
             git checkout -b $BRANCH origin/main
           fi
-
           git branch
 
       - name: Atualizar a branch com a main
