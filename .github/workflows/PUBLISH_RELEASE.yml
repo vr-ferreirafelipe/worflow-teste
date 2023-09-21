@@ -64,7 +64,7 @@ jobs:
 
       - name: Verificar se a branch existe
         run: |
-          BRANCH=${{ inputs.BRANCH }}
+          BRANCH="homolog"
 
           if ! git rev-parse --verify $BRANCH; then
             # Se a branch não existir será criada
@@ -73,7 +73,7 @@ jobs:
 
       - name: Atualizar a branch com a main
         run: |
-          BRANCH=${{ inputs.BRANCH }}
+          BRANCH="homolog"
 
           git fetch origin main
           git checkout $BRANCH
