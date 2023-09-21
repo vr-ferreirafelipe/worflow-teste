@@ -10,7 +10,7 @@ on:
         required: true
         type: string
     outputs:
-      :IS_PUBLISHED:
+      IS_PUBLISHED:
         description: "Armazena status de a versão foi publicada."
         value: ${{ jobs.publish_release.outputs.IS_PUBLISHED }}
 jobs:
