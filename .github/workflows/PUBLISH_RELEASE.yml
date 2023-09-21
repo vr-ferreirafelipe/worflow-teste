@@ -7,6 +7,7 @@ jobs:
   run_check_changes:
     name: Run check changes
     uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/check-changes.yml@MOB-1094
+    if: github.ref == 'refs/heads/main's
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
 
@@ -21,54 +22,68 @@ jobs:
       LAST_VERSION: ${{ needs.run_check_changes.outputs.LAST_VERSION }}
       COMMIT_MESSAGES: ${{ needs.run_check_changes.outputs.COMMIT_MESSAGES }}
 
-  publish_release:
-    name: Publicar nova versão
+  # publish_release:
+  #   name: Publicar nova versão
+  #   needs:
+  #     - run_check_changes
+  #     - run_generate_new_tag
+  #   if: github.ref == 'refs/heads/main' && needs.run_check_changes.outputs.HAS_CHANGES && needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE
+
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         token: ${{ secrets.VRPACKAGETOKEN }}
+  #         fetch-depth: 0
+  #         ref: main
+
+  #     - name: Git Config
+  #       run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
+
+  #     - name: Upgrade release on packages
+  #       id: upgrade_release_package
+  #       run: |
+  #         HAS_NEW_RELEASE=${{ needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE }}
+  #         NEW_VERSION=${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
+
+  #         npm --no-git-tag-version version $NEW_VERSION
+  #         git add .
+  #         git commit -m "ci: Entrega da versão $NEW_VERSION"
+  #         git push
+
+  #     - name: Publish Release
+  #       id: publish_release
+  #       uses: actions/create-release@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+  #       with:
+  #         tag_name: v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
+  #         release_name: Release v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
+  #         commitish: main
+
+  run-publish-release:
+    name: Run leave it up to date
+    uses: ./.github/workflows/leave-it-up-to-date.yml
     needs:
       - run_check_changes
       - run_generate_new_tag
     if: github.ref == 'refs/heads/main' && needs.run_check_changes.outputs.HAS_CHANGES && needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE
+    secrets:
+      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+    with:
+      GITHUB_ACTOR: $GITHUB_ACTOR
+      NEW_VERSION: v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
 
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.VRPACKAGETOKEN }}
-          fetch-depth: 0
-          ref: main
-
-      - name: Git Config
-        run: git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com" && git config --global user.name "${GITHUB_ACTOR}"
-
-      - name: Upgrade release on packages
-        id: upgrade_release_package
-        run: |
-          HAS_NEW_RELEASE=${{ needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE }}
-          NEW_VERSION=${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
-
-          npm --no-git-tag-version version $NEW_VERSION
-          git add . 
-          git commit -m "ci: Entrega da versão $NEW_VERSION"
-          git push
-
-      - name: Publish Release
-        id: publish_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
-        with:
-          tag_name: v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
-          release_name: Release v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
-          commitish: main
-
-  run-leave-it-up-to-date:
+  run-keep-up-to-date:
     name: Run leave it up to date
     uses: ./.github/workflows/leave-it-up-to-date.yml
     needs:
       - run_check_changes
       - run_generate_new_tag
       - publish_release
+    if: needs.run_generate_new_tag.outputs.HAS_NEW_RELEASE && needs.release.outputs.IS_PUBLISHED
     secrets:
       VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
     with:
