@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout do Código
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.VRPACKAGETOKEN }}
 
       - name: Verificar se a branch existe
         run: |
