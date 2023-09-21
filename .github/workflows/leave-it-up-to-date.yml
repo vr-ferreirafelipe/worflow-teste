@@ -26,8 +26,9 @@ jobs:
           if ! git show-ref --quiet refs/heads/$BRANCH; then
             # Se a branch não existir será criada
             git checkout -b $BRANCH origin/main
-            echo "Criou ------------------------"
           fi
+
+          git branch
 
       - name: Atualizar a branch com a main
         run: |
