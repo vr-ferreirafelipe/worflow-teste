@@ -66,7 +66,11 @@ jobs:
     name: Run leave it up to date
     uses: ./.github/workflows/leave-it-up-to-date.yml
     secrets:
-      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}    
+    needs:
+      - run_check_changes
+      - run_generate_new_tag
+      - publish_release
     with:
       BRANCH: "homolog"
 
