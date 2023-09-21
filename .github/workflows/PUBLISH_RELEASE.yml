@@ -62,6 +62,14 @@ jobs:
           release_name: Release v${{ needs.run_generate_new_tag.outputs.NEW_VERSION }}
           commitish: main
 
+  run-leave-it-up-to-date:
+    name: Run leave it up to date
+    uses: ./leave-it-up-to-date.yml
+    secrets:
+      VR_PACKAGE_TOKEN: ${{ secrets.VRPACKAGETOKEN }}
+    with:
+      BRANCH: "homolog"
+
   run_jira_issue_release:
     name: Run Jira Integration
     uses: vrsoftbr/VRMobileReusableWorkflows/.github/workflows/jira_issue_release.yml@MOB-1094
